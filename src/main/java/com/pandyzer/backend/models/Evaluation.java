@@ -25,19 +25,20 @@ public class Evaluation {
     private String link;
     @Column(name = "tipoAplicacaoId")
     private Integer applicationType;
-    @Column(name = "usuarioId")
-    private Integer userId;
     @Column(name = "statusId")
     private Integer statusId;
     @Column(name = "data_cadastro")
     private Date register;
+    @ManyToOne
+    @JoinColumn(name = "usuarioId", nullable = false)
+    private User user;
     @OneToMany(mappedBy = "evaluation", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Objective> objectives = new ArrayList<>();
 
     public Evaluation () {}
 
-    public Evaluation (Long id, String description, Date startDate, Date finalDate, String link, Integer applicationType, Integer userId, Integer statusId, Date register) {
+    public Evaluation (Long id, String description, Date startDate, Date finalDate, String link, Integer applicationType, Integer statusId, Date register, User user) {
 
         this.id = id;
         this.description = description;
@@ -45,9 +46,9 @@ public class Evaluation {
         this.finalDate = finalDate;
         this.link = link;
         this.applicationType = applicationType;
-        this.userId = userId;
         this.statusId = statusId;
         this.register = register;
+        this.user = user;
 
     }
 
@@ -69,9 +70,6 @@ public class Evaluation {
     public Integer getApplicationType() {
         return applicationType;
     }
-    public Integer getUserId() {
-        return userId;
-    }
     public Integer getStatusId() {
         return statusId;
     }
@@ -80,6 +78,9 @@ public class Evaluation {
     }
     public List<Objective> getObjectives() {
         return objectives;
+    }
+    public User getUser() {
+        return user;
     }
 
     public void setId(Long id) {
@@ -100,9 +101,6 @@ public class Evaluation {
     public void setApplicationType(Integer applicationType) {
         this.applicationType = applicationType;
     }
-    public void setUserId(Integer userId) {
-        this.userId = userId;
-    }
     public void setStatusId(Integer statusId) {
         this.statusId = statusId;
     }
@@ -111,6 +109,9 @@ public class Evaluation {
     }
     public void setObjectives(List<Objective> objectives) {
         this.objectives = objectives;
+    }
+    public void setUser(User user) {
+        this.user = user;
     }
 
 }
