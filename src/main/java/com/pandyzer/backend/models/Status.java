@@ -18,6 +18,9 @@ public class Status {
     @OneToMany(mappedBy = "status", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Evaluation> evaluations = new ArrayList<>();
+    @OneToMany(mappedBy = "status", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<Objective> objectives = new ArrayList<>();
 
 
     public Status () {}
@@ -38,6 +41,9 @@ public class Status {
     public List<Evaluation> getEvaluations() {
         return evaluations;
     }
+    public List<Objective> getObjectives() {
+        return objectives;
+    }
 
     public void setId(Long id) {
         this.id = id;
@@ -47,6 +53,9 @@ public class Status {
     }
     public void setEvaluations(List<Evaluation> evaluations) {
         this.evaluations = evaluations;
+    }
+    public void setObjectives(List<Objective> objectives) {
+        this.objectives = objectives;
     }
 
 }

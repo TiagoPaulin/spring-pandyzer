@@ -22,18 +22,22 @@ public class Objective {
     @ManyToOne
     @JoinColumn(name = "avaliacaoId", nullable = false)
     private Evaluation evaluation;
+    @ManyToOne
+    @JoinColumn(name = "statusId", nullable = false)
+    private Status status;
     @OneToMany(mappedBy = "objective", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Problem> problems = new ArrayList<>();
 
     public Objective () {}
 
-    public Objective (Long id, String description, Date register, Evaluation evaluation) {
+    public Objective (Long id, String description, Date register, Evaluation evaluation, Status status) {
 
         this.id = id;
         this.description = description;
         this.register = register;
         this.evaluation = evaluation;
+        this.status = status;
 
     }
 
@@ -52,6 +56,9 @@ public class Objective {
     public Evaluation getEvaluation() {
         return evaluation;
     }
+    public Status getStatus() {
+        return status;
+    }
 
     public void setId(Long id) {
         this.id = id;
@@ -67,6 +74,9 @@ public class Objective {
     }
     public void setEvaluation(Evaluation evaluation) {
         this.evaluation = evaluation;
+    }
+    public void setStatus(Status status) {
+        this.status = status;
     }
 
 }
