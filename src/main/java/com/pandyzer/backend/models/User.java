@@ -23,17 +23,18 @@ public class User {
     private String password;
     @Column(name = "ativo")
     private Integer active;
-    @Column(name = "tipoUsuario")
-    private Integer userType;
     @Column(name = "data_cadastro")
     private Date register;
+    @ManyToOne
+    @JoinColumn(name = "tipUsuarioId", nullable = false)
+    private UserType userType;
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Evaluation> evaluations = new ArrayList<>();
 
     public User () {}
 
-    public User (Long id, String name, String email, String password, Integer active, Integer userType, Date register) {
+    public User (Long id, String name, String email, String password, Integer active, UserType userType, Date register) {
 
         this.id = id;
         this.name = name;
@@ -60,7 +61,7 @@ public class User {
     public Integer getActive() {
         return active;
     }
-    public Integer getUserType() {
+    public UserType getUserType() {
         return userType;
     }
     public Date getRegister() {
@@ -85,7 +86,7 @@ public class User {
     public void setActive(Integer active) {
         this.active = active;
     }
-    public void setUserType(Integer userType) {
+    public void setUserType(UserType userType) {
         this.userType = userType;
     }
     public void setRegister(Date register) {

@@ -1,7 +1,9 @@
 package com.pandyzer.backend.services;
 
 import com.pandyzer.backend.models.User;
+import com.pandyzer.backend.models.UserType;
 import com.pandyzer.backend.repositories.UserRepository;
+import com.pandyzer.backend.repositories.UserTypeRepository;
 import com.pandyzer.backend.services.exceptions.ResourceNotFoundException;
 import com.pandyzer.backend.services.exceptions.BadRequestException;
 import jakarta.transaction.Transactional;
@@ -15,6 +17,8 @@ public class UserService {
 
     @Autowired
     private UserRepository repository;
+    @Autowired
+    private UserTypeRepository userTypeRepository;
 
     public User findById (Long id) {
 
@@ -27,6 +31,7 @@ public class UserService {
     public User insert (User obj) {
 
         validate(obj);
+        obj.setUserType(fetchFullUserType(obj));
         return repository.save(obj);
 
     }
@@ -79,6 +84,11 @@ public class UserService {
 
         return value == null || value.trim().isEmpty();
 
+    }
+
+    private UserType fetchFullUserType(User obj) {
+        Long id = obj.getUserType().getId();
+        return  userTypeRepository.findById(id).orElseThrow(() -> new BadRequestException("Tupo de usuário com ID " + id + " não encontrado"));
     }
 
 }
