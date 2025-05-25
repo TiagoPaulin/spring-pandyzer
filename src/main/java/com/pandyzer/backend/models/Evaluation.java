@@ -37,6 +37,9 @@ public class Evaluation {
     @OneToMany(mappedBy = "evaluation", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Objective> objectives = new ArrayList<>();
+    @OneToMany(mappedBy = "evaluation", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<Evaluator> evaluators = new ArrayList<>();
 
     public Evaluation () {}
 
@@ -84,6 +87,9 @@ public class Evaluation {
     public User getUser() {
         return user;
     }
+    public List<Evaluator> getEvaluators() {
+        return evaluators;
+    }
 
     public void setId(Long id) {
         this.id = id;
@@ -114,6 +120,9 @@ public class Evaluation {
     }
     public void setUser(User user) {
         this.user = user;
+    }
+    public void setEvaluators(List<Evaluator> evaluators) {
+        this.evaluators = evaluators;
     }
 
 }
