@@ -2,9 +2,11 @@ package com.pandyzer.backend.services;
 
 import com.pandyzer.backend.models.ApplicationType;
 import com.pandyzer.backend.models.Evaluation;
+import com.pandyzer.backend.models.Status;
 import com.pandyzer.backend.models.User;
 import com.pandyzer.backend.repositories.ApplicationTypeRepository;
 import com.pandyzer.backend.repositories.EvaluationRepository;
+import com.pandyzer.backend.repositories.StatusRepository;
 import com.pandyzer.backend.repositories.UserRepository;
 import com.pandyzer.backend.services.exceptions.BadRequestException;
 import com.pandyzer.backend.services.exceptions.ResourceNotFoundException;
@@ -23,6 +25,8 @@ public class EvaluationService {
     private UserRepository userRepository;
     @Autowired
     private ApplicationTypeRepository applicationTypeRepository;
+    @Autowired
+    private StatusRepository statusRepository;
 
     public Evaluation findById (Long id) {
 
@@ -37,6 +41,7 @@ public class EvaluationService {
         validate(obj);
         obj.setUser(fetchFullUser(obj));
         obj.setApplicationType(fetchFullApplicationType(obj));
+        obj.setStatus(fetchFullStatus(obj));
         return repository.save(obj);
 
     }
@@ -64,7 +69,7 @@ public class EvaluationService {
         evaluation.setFinalDate(obj.getFinalDate());
         evaluation.setLink(obj.getLink());
         evaluation.setApplicationType(fetchFullApplicationType(obj));
-        evaluation.setStatusId(obj.getStatusId());
+        evaluation.setStatus(fetchFullStatus(obj));
         evaluation.setUser(fetchFullUser(obj));
 
     }
@@ -75,7 +80,7 @@ public class EvaluationService {
             throw new BadRequestException("É necessário fornecer uma descrição para a avaliação.");
         }
         if (isNullOrEmptyOrBlank(evaluation.getLink())) {
-            throw new BadRequestException("É necessário informar de acesso a interface.");
+            throw new BadRequestException("É necessário informar o link de acesso a interface.");
         }
         if (evaluation.getStartDate() == null) {
             throw new BadRequestException("É necessário informar a data inicial da avaliação.");
@@ -91,6 +96,9 @@ public class EvaluationService {
         }
         if (evaluation.getUser() == null || evaluation.getUser().getId() == null) {
             throw new BadRequestException("A avaliação deve estar relacionada a um usuário.");
+        }
+        if (evaluation.getStatus() == null) {
+            throw new BadRequestException("Informe um status para a avalição");
         }
 
     }
@@ -110,6 +118,13 @@ public class EvaluationService {
 
         Long id = obj.getApplicationType().getId();
         return applicationTypeRepository.findById(id).orElseThrow(() -> new BadRequestException("Tipo de aplicação com ID " + id + " não encontrado."));
+
+    }
+
+    private Status fetchFullStatus(Evaluation obj) {
+
+        Long id = obj.getStatus().getId();
+        return statusRepository.findById(id).orElseThrow(() -> new BadRequestException("Status com ID " + id + " não encontrado."));
 
     }
 

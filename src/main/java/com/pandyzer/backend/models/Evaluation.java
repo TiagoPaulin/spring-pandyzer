@@ -23,10 +23,11 @@ public class Evaluation {
     private Date finalDate;
     @Column(name = "link")
     private String link;
-    @Column(name = "statusId")
-    private Integer statusId;
     @Column(name = "data_cadastro")
     private Date register;
+    @ManyToOne
+    @JoinColumn(name = "statusId", nullable = false)
+    private Status status;
     @ManyToOne
     @JoinColumn(name = "tipoAplicacaoId", nullable = false)
     private ApplicationType applicationType;
@@ -39,7 +40,7 @@ public class Evaluation {
 
     public Evaluation () {}
 
-    public Evaluation (Long id, String description, Date startDate, Date finalDate, String link, ApplicationType applicationType, Integer statusId, Date register, User user) {
+    public Evaluation (Long id, String description, Date startDate, Date finalDate, String link, ApplicationType applicationType, Status status, Date register, User user) {
 
         this.id = id;
         this.description = description;
@@ -47,7 +48,7 @@ public class Evaluation {
         this.finalDate = finalDate;
         this.link = link;
         this.applicationType = applicationType;
-        this.statusId = statusId;
+        this.status = status;
         this.register = register;
         this.user = user;
 
@@ -71,8 +72,8 @@ public class Evaluation {
     public ApplicationType getApplicationType() {
         return applicationType;
     }
-    public Integer getStatusId() {
-        return statusId;
+    public Status getStatus() {
+        return status;
     }
     public Date getRegister() {
         return  register;
@@ -102,8 +103,8 @@ public class Evaluation {
     public void setApplicationType(ApplicationType applicationType) {
         this.applicationType = applicationType;
     }
-    public void setStatusId(Integer statusId) {
-        this.statusId = statusId;
+    public void setStatus(Status status) {
+        this.status = status;
     }
     public void setRegister(Date register) {
         this.register = register;
