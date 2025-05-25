@@ -1,9 +1,11 @@
 package com.pandyzer.backend.services;
 
 import com.pandyzer.backend.models.Heuristic;
+import com.pandyzer.backend.models.Objective;
 import com.pandyzer.backend.models.Problem;
 import com.pandyzer.backend.models.Severity;
 import com.pandyzer.backend.repositories.HeuristicRepository;
+import com.pandyzer.backend.repositories.ObjectiveRepository;
 import com.pandyzer.backend.repositories.ProblemRepository;
 import com.pandyzer.backend.repositories.SeverityRepository;
 import com.pandyzer.backend.services.exceptions.BadRequestException;
@@ -23,6 +25,8 @@ public class ProblemService {
     private HeuristicRepository heuristicRepository;
     @Autowired
     private SeverityRepository severityRepository;
+    @Autowired
+    private ObjectiveRepository objectiveRepository;
 
     public Problem findById (Long id) {
 
@@ -37,6 +41,7 @@ public class ProblemService {
         validate(obj);
         obj.setHeuristic(fetchFullHeuristic(obj));
         obj.setSeverity(fetchFullSeverity(obj));
+        obj.setObjective(fetchFullObjective(obj));
         return repository.save(obj);
 
     }
@@ -63,6 +68,7 @@ public class ProblemService {
         problem.setRecomendation(obj.getRecomendation());
         problem.setHeuristic(fetchFullHeuristic(obj));
         problem.setSeverity(fetchFullSeverity(obj));
+        problem.setObjective(fetchFullObjective(obj));
 
     }
 
@@ -79,6 +85,9 @@ public class ProblemService {
         }
         if (problem.getSeverity() == null || problem.getSeverity().getId() == null) {
             throw new BadRequestException("É preciso o nível de severidade do problema.");
+        }
+        if (problem.getObjective() == null || problem.getObjective().getId() == null) {
+            throw new BadRequestException("É preciso informar o objetivo ao qual o problema pertence.");
         }
 
     }
@@ -100,6 +109,11 @@ public class ProblemService {
         Long id = obj.getSeverity().getId();
         return severityRepository.findById(id).orElseThrow(() -> new BadRequestException("Severidade com ID " + id + " não encontrada."));
 
+    }
+
+    private Objective fetchFullObjective(Problem obj) {
+        Long id = obj.getObjective().getId();
+        return objectiveRepository.findById(id).orElseThrow(() -> new BadRequestException("Objetivo com ID " + id + " não encontrado."));
     }
 
 }

@@ -1,5 +1,6 @@
 package com.pandyzer.backend.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -23,6 +24,9 @@ public class Problem {
     @Column(name = "data_cadastro")
     private Date register;
     @ManyToOne
+    @JoinColumn(name = "objetivoId", nullable = false)
+    private Objective objective;
+    @ManyToOne
     @JoinColumn(name = "heuristicaId", nullable = false)
     private Heuristic heuristic;
     @ManyToOne
@@ -31,7 +35,7 @@ public class Problem {
 
     public Problem () {}
 
-    public Problem (Long id, Long userId, String description, String recomendation, Date register, Heuristic heuristic, Severity severity) {
+    public Problem (Long id, Long userId, String description, String recomendation, Date register, Objective objective, Heuristic heuristic, Severity severity) {
 
         this.id = id;
         this.heuristic = heuristic;
@@ -40,6 +44,7 @@ public class Problem {
         this.description = description;
         this.recomendation = recomendation;
         this.register = register;
+        this.objective = objective;
 
     }
 
@@ -64,6 +69,9 @@ public class Problem {
     public Date getRegister() {
         return register;
     }
+    public Objective getObjective() {
+        return objective;
+    }
 
     public void setId(Long id) {
         this.id = id;
@@ -85,6 +93,9 @@ public class Problem {
     }
     public void setRegister(Date register) {
         this.register = register;
+    }
+    public void setObjective(Objective objective) {
+        this.objective = objective;
     }
 
 }

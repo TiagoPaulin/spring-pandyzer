@@ -1,8 +1,11 @@
 package com.pandyzer.backend.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "Objetivo")
@@ -18,6 +21,9 @@ public class Objective {
     private Integer evaluationId;
     @Column(name = "data_cadastro")
     private Date register;
+    @OneToMany(mappedBy = "objective", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<Problem> problems = new ArrayList<>();
 
     public Objective () {}
 
@@ -42,6 +48,9 @@ public class Objective {
     public Date getRegister() {
         return register;
     }
+    public List<Problem> getProblems() {
+        return problems;
+    }
 
     public void setId(Long id) {
         this.id = id;
@@ -54,6 +63,9 @@ public class Objective {
     }
     public void setRegister(Date register) {
         this.register = register;
+    }
+    public void setProblems(List<Problem> problems) {
+        this.problems = problems;
     }
 
 }
