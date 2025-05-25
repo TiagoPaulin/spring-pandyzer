@@ -1,7 +1,9 @@
 package com.pandyzer.backend.services;
 
 import com.pandyzer.backend.models.Evaluation;
+import com.pandyzer.backend.models.User;
 import com.pandyzer.backend.repositories.EvaluationRepository;
+import com.pandyzer.backend.repositories.UserRepository;
 import com.pandyzer.backend.services.exceptions.BadRequestException;
 import com.pandyzer.backend.services.exceptions.ResourceNotFoundException;
 import jakarta.transaction.Transactional;
@@ -15,6 +17,8 @@ public class EvaluationService {
 
     @Autowired
     private EvaluationRepository repository;
+    @Autowired
+    private UserRepository userRepository;
 
     public Evaluation findById (Long id) {
 
@@ -27,6 +31,7 @@ public class EvaluationService {
     public Evaluation insert (Evaluation obj) {
 
         validate(obj);
+        obj.setUser(fetchFullUser(obj));
         return repository.save(obj);
 
     }
@@ -55,6 +60,7 @@ public class EvaluationService {
         evaluation.setLink(obj.getLink());
         evaluation.setApplicationType(obj.getApplicationType());
         evaluation.setStatusId(obj.getStatusId());
+        evaluation.setUser(fetchFullUser(obj));
 
     }
 
@@ -78,6 +84,9 @@ public class EvaluationService {
         if (evaluation.getApplicationType() == null || evaluation.getApplicationType() <= 0) {
             throw new BadRequestException("É necessário informar um tipo de aplicação válido.");
         }
+        if (evaluation.getUser() == null || evaluation.getUser().getId() == null) {
+            throw new BadRequestException("A avaliação deve estar relacionada a um usuário.");
+        }
 
     }
 
@@ -85,6 +94,11 @@ public class EvaluationService {
 
         return value == null || value.trim().isEmpty();
 
+    }
+
+    private User fetchFullUser(Evaluation obj) {
+        Long id = obj.getUser().getId();
+        return userRepository.findById(id).orElseThrow(() -> new BadRequestException("Usuário com ID " + id + " não encontrado."));
     }
 
 }
