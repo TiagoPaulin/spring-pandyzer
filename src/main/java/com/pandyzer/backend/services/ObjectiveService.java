@@ -21,8 +21,6 @@ public class ObjectiveService {
     private ObjectiveRepository repository;
     @Autowired
     private EvaluationRepository evaluationRepository;
-    @Autowired
-    private StatusRepository statusRepository;
 
     public Objective findById (Long id) {
 
@@ -36,7 +34,6 @@ public class ObjectiveService {
 
         validate(obj);
         obj.setEvaluation(fetchFullEvaluation(obj));
-        obj.setStatus(fetchFullStatus(obj));
         return repository.save(obj);
 
     }
@@ -61,7 +58,6 @@ public class ObjectiveService {
 
         objective.setDescription(obj.getDescription());
         objective.setEvaluation(fetchFullEvaluation(obj));
-        objective.setStatus(fetchFullStatus(obj));
 
     }
 
@@ -72,9 +68,6 @@ public class ObjectiveService {
         }
         if (objective.getEvaluation() == null || objective.getEvaluation().getId() == null) {
             throw new BadRequestException("O objetivo deve estar relacionado a uma avaliação.");
-        }
-        if (objective.getStatus() == null) {
-            throw new BadRequestException("É necessário informar um status para o objetivo");
         }
 
     }
@@ -88,13 +81,6 @@ public class ObjectiveService {
     private Evaluation fetchFullEvaluation(Objective obj) {
         Long id = obj.getEvaluation().getId();
         return evaluationRepository.findById(id).orElseThrow(() -> new BadRequestException("Avaliação com ID " + id + " não encontrada."));
-    }
-
-    private Status fetchFullStatus(Objective obj) {
-
-        Long id = obj.getStatus().getId();
-        return statusRepository.findById(id).orElseThrow(() -> new BadRequestException("Status com ID " + id + " não encontrada."));
-
     }
 
 }
