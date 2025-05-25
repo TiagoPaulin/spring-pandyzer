@@ -17,22 +17,23 @@ public class Objective {
     private Long id;
     @Column(name = "descricao")
     private String description;
-    @Column(name = "avaliacaoId")
-    private Integer evaluationId;
     @Column(name = "data_cadastro")
     private Date register;
+    @ManyToOne
+    @JoinColumn(name = "avaliacaoId", nullable = false)
+    private Evaluation evaluation;
     @OneToMany(mappedBy = "objective", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Problem> problems = new ArrayList<>();
 
     public Objective () {}
 
-    public Objective (Long id, String description, Integer evaluationId, Date register) {
+    public Objective (Long id, String description, Date register, Evaluation evaluation) {
 
         this.id = id;
         this.description = description;
-        this.evaluationId = evaluationId;
         this.register = register;
+        this.evaluation = evaluation;
 
     }
 
@@ -42,14 +43,14 @@ public class Objective {
     public String getDescription() {
         return description;
     }
-    public Integer getEvaluationId() {
-        return evaluationId;
-    }
     public Date getRegister() {
         return register;
     }
     public List<Problem> getProblems() {
         return problems;
+    }
+    public Evaluation getEvaluation() {
+        return evaluation;
     }
 
     public void setId(Long id) {
@@ -58,14 +59,14 @@ public class Objective {
     public void setDescription(String description) {
         this.description = description;
     }
-    public void setEvaluationId(Integer evaluationId) {
-        this.evaluationId = evaluationId;
-    }
     public void setRegister(Date register) {
         this.register = register;
     }
     public void setProblems(List<Problem> problems) {
         this.problems = problems;
+    }
+    public void setEvaluation(Evaluation evaluation) {
+        this.evaluation = evaluation;
     }
 
 }
