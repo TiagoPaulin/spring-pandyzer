@@ -1,13 +1,7 @@
 package com.pandyzer.backend.services;
 
-import com.pandyzer.backend.models.Heuristic;
-import com.pandyzer.backend.models.Objective;
-import com.pandyzer.backend.models.Problem;
-import com.pandyzer.backend.models.Severity;
-import com.pandyzer.backend.repositories.HeuristicRepository;
-import com.pandyzer.backend.repositories.ObjectiveRepository;
-import com.pandyzer.backend.repositories.ProblemRepository;
-import com.pandyzer.backend.repositories.SeverityRepository;
+import com.pandyzer.backend.models.*;
+import com.pandyzer.backend.repositories.*;
 import com.pandyzer.backend.services.exceptions.BadRequestException;
 import com.pandyzer.backend.services.exceptions.ResourceNotFoundException;
 import jakarta.transaction.Transactional;
@@ -27,6 +21,8 @@ public class ProblemService {
     private SeverityRepository severityRepository;
     @Autowired
     private ObjectiveRepository objectiveRepository;
+    @Autowired
+    private UserRepository userRepository;
 
     public Problem findById (Long id) {
 
@@ -42,6 +38,7 @@ public class ProblemService {
         obj.setHeuristic(fetchFullHeuristic(obj));
         obj.setSeverity(fetchFullSeverity(obj));
         obj.setObjective(fetchFullObjective(obj));
+        obj.setUser(fetchFullUser(obj));
         return repository.save(obj);
 
     }
@@ -69,6 +66,7 @@ public class ProblemService {
         problem.setHeuristic(fetchFullHeuristic(obj));
         problem.setSeverity(fetchFullSeverity(obj));
         problem.setObjective(fetchFullObjective(obj));
+        problem.setUser(fetchFullUser(obj));
 
     }
 
@@ -88,6 +86,9 @@ public class ProblemService {
         }
         if (problem.getObjective() == null || problem.getObjective().getId() == null) {
             throw new BadRequestException("É preciso informar o objetivo ao qual o problema pertence.");
+        }
+        if (problem.getUser() == null) {
+            throw new BadRequestException("O problema deve estar relacionado a um usuário.");
         }
 
     }
@@ -114,6 +115,13 @@ public class ProblemService {
     private Objective fetchFullObjective(Problem obj) {
         Long id = obj.getObjective().getId();
         return objectiveRepository.findById(id).orElseThrow(() -> new BadRequestException("Objetivo com ID " + id + " não encontrado."));
+    }
+
+    private User fetchFullUser(Problem obj) {
+
+        Long id = obj.getUser().getId();
+        return userRepository.findById(id).orElseThrow(() -> new BadRequestException("Usuário com ID " + id + " não encontrado"));
+
     }
 
 }
