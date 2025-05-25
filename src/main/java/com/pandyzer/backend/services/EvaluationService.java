@@ -1,7 +1,9 @@
 package com.pandyzer.backend.services;
 
+import com.pandyzer.backend.models.ApplicationType;
 import com.pandyzer.backend.models.Evaluation;
 import com.pandyzer.backend.models.User;
+import com.pandyzer.backend.repositories.ApplicationTypeRepository;
 import com.pandyzer.backend.repositories.EvaluationRepository;
 import com.pandyzer.backend.repositories.UserRepository;
 import com.pandyzer.backend.services.exceptions.BadRequestException;
@@ -19,6 +21,8 @@ public class EvaluationService {
     private EvaluationRepository repository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private ApplicationTypeRepository applicationTypeRepository;
 
     public Evaluation findById (Long id) {
 
@@ -32,6 +36,7 @@ public class EvaluationService {
 
         validate(obj);
         obj.setUser(fetchFullUser(obj));
+        obj.setApplicationType(fetchFullApplicationType(obj));
         return repository.save(obj);
 
     }
@@ -58,7 +63,7 @@ public class EvaluationService {
         evaluation.setStartDate(obj.getStartDate());
         evaluation.setFinalDate(obj.getFinalDate());
         evaluation.setLink(obj.getLink());
-        evaluation.setApplicationType(obj.getApplicationType());
+        evaluation.setApplicationType(fetchFullApplicationType(obj));
         evaluation.setStatusId(obj.getStatusId());
         evaluation.setUser(fetchFullUser(obj));
 
@@ -81,7 +86,7 @@ public class EvaluationService {
         if (evaluation.getFinalDate().before(evaluation.getStartDate())) {
             throw new BadRequestException("A data final não pode ser anterior à data inicial.");
         }
-        if (evaluation.getApplicationType() == null || evaluation.getApplicationType() <= 0) {
+        if (evaluation.getApplicationType() == null) {
             throw new BadRequestException("É necessário informar um tipo de aplicação válido.");
         }
         if (evaluation.getUser() == null || evaluation.getUser().getId() == null) {
@@ -99,6 +104,13 @@ public class EvaluationService {
     private User fetchFullUser(Evaluation obj) {
         Long id = obj.getUser().getId();
         return userRepository.findById(id).orElseThrow(() -> new BadRequestException("Usuário com ID " + id + " não encontrado."));
+    }
+
+    private ApplicationType fetchFullApplicationType(Evaluation obj) {
+
+        Long id = obj.getApplicationType().getId();
+        return applicationTypeRepository.findById(id).orElseThrow(() -> new BadRequestException("Tipo de aplicação com ID " + id + " não encontrado."));
+
     }
 
 }
