@@ -1,10 +1,9 @@
 package com.pandyzer.backend.services;
 
-import com.pandyzer.backend.models.Evaluation;
-import com.pandyzer.backend.models.Evaluator;
-import com.pandyzer.backend.models.User;
+import com.pandyzer.backend.models.*;
 import com.pandyzer.backend.repositories.EvaluationRepository;
 import com.pandyzer.backend.repositories.EvaluatorRepository;
+import com.pandyzer.backend.repositories.StatusRepository;
 import com.pandyzer.backend.repositories.UserRepository;
 import com.pandyzer.backend.services.exceptions.BadRequestException;
 import com.pandyzer.backend.services.exceptions.ResourceNotFoundException;
@@ -23,6 +22,8 @@ public class EvaluatorService {
     private UserRepository userRepository;
     @Autowired
     private EvaluationRepository evaluationRepository;
+    @Autowired
+    private StatusRepository statusRepository;
 
     public Evaluator findById (Long id) {
 
@@ -37,6 +38,7 @@ public class EvaluatorService {
         validate(obj);
         obj.setUser(fetchFullUser(obj));
         obj.setEvaluation(fetchFullEvaluation(obj));
+        obj.setStatus(fetchFullStatus(obj));
         return repository.save(obj);
 
     }
@@ -61,6 +63,7 @@ public class EvaluatorService {
 
         evaluator.setUser(fetchFullUser(obj));
         evaluator.setEvaluation(fetchFullEvaluation(obj));
+        evaluator.setStatus(fetchFullStatus(obj));
 
     }
 
@@ -71,6 +74,9 @@ public class EvaluatorService {
         }
         if (evaluator.getEvaluation() == null) {
             throw new BadRequestException("É preciso informar uma avaliação.");
+        }
+        if (evaluator.getStatus() == null) {
+            throw new BadRequestException("É preciso informar um status para a avaliação do avaliador.");
         }
 
     }
@@ -88,5 +94,13 @@ public class EvaluatorService {
         return evaluationRepository.findById(id).orElseThrow(() -> new BadRequestException("Avaliação com ID " + id + " não encontrada."));
 
     }
+
+    private Status fetchFullStatus(Evaluator obj) {
+
+        Long id = obj.getStatus().getId();
+        return statusRepository.findById(id).orElseThrow(() -> new BadRequestException("Status com ID " + id + " não encontrada."));
+
+    }
+
 
 }

@@ -25,8 +25,6 @@ public class EvaluationService {
     private UserRepository userRepository;
     @Autowired
     private ApplicationTypeRepository applicationTypeRepository;
-    @Autowired
-    private StatusRepository statusRepository;
 
     public Evaluation findById (Long id) {
 
@@ -41,7 +39,6 @@ public class EvaluationService {
         validate(obj);
         obj.setUser(fetchFullUser(obj));
         obj.setApplicationType(fetchFullApplicationType(obj));
-        obj.setStatus(fetchFullStatus(obj));
         return repository.save(obj);
 
     }
@@ -69,7 +66,6 @@ public class EvaluationService {
         evaluation.setFinalDate(obj.getFinalDate());
         evaluation.setLink(obj.getLink());
         evaluation.setApplicationType(fetchFullApplicationType(obj));
-        evaluation.setStatus(fetchFullStatus(obj));
         evaluation.setUser(fetchFullUser(obj));
 
     }
@@ -97,9 +93,6 @@ public class EvaluationService {
         if (evaluation.getUser() == null || evaluation.getUser().getId() == null) {
             throw new BadRequestException("A avaliação deve estar relacionada a um usuário.");
         }
-        if (evaluation.getStatus() == null) {
-            throw new BadRequestException("Informe um status para a avalição");
-        }
 
     }
 
@@ -118,13 +111,6 @@ public class EvaluationService {
 
         Long id = obj.getApplicationType().getId();
         return applicationTypeRepository.findById(id).orElseThrow(() -> new BadRequestException("Tipo de aplicação com ID " + id + " não encontrado."));
-
-    }
-
-    private Status fetchFullStatus(Evaluation obj) {
-
-        Long id = obj.getStatus().getId();
-        return statusRepository.findById(id).orElseThrow(() -> new BadRequestException("Status com ID " + id + " não encontrado."));
 
     }
 

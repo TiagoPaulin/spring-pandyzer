@@ -11,22 +11,26 @@ public class Evaluator {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "avaliadorId")
     private Long id;
+    @Column(name = "data_cadastro")
+    private Date register;
     @ManyToOne
     @JoinColumn(name = "usuarioId", nullable = false)
     private User user;
     @ManyToOne
     @JoinColumn(name = "avaliacaoId", nullable = false)
     private Evaluation evaluation;
-    @Column(name = "data_cadastro")
-    private Date register;
+    @ManyToOne
+    @JoinColumn(name = "statusId", nullable = false)
+    private Status status;
 
     public Evaluator () {}
 
-    public Evaluator (Long id, User user, Evaluation evaluation, Date register) {
+    public Evaluator (Long id, User user, Evaluation evaluation, Status status, Date register) {
 
         this.id = id;
         this.user = user;
         this.evaluation = evaluation;
+        this.status = status;
         this.register = register;
 
     }
@@ -43,6 +47,9 @@ public class Evaluator {
     public Date getRegister() {
         return register;
     }
+    public Status getStatus() {
+        return status;
+    }
 
     public void setId(Long id) {
         this.id = id;
@@ -55,6 +62,9 @@ public class Evaluator {
     }
     public void setRegister(Date register) {
         this.register = register;
+    }
+    public void setStatus(Status status) {
+        this.status = status;
     }
 
 }
