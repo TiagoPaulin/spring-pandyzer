@@ -15,8 +15,6 @@ public class Problem {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "problemaId")
     private Long id;
-    @Column(name = "usuarioId")
-    private Long userId;
     @Column(name = "descricao")
     private String description;
     @Column(name = "recomendacao")
@@ -32,14 +30,17 @@ public class Problem {
     @ManyToOne
     @JoinColumn(name = "severidadeId", nullable = false)
     private Severity severity;
+    @ManyToOne
+    @JoinColumn(name = "usuarioId", nullable = false)
+    private User user;
 
     public Problem () {}
 
-    public Problem (Long id, Long userId, String description, String recomendation, Date register, Objective objective, Heuristic heuristic, Severity severity) {
+    public Problem (Long id, User user, String description, String recomendation, Date register, Objective objective, Heuristic heuristic, Severity severity) {
 
         this.id = id;
         this.heuristic = heuristic;
-        this.userId = userId;
+        this.user = user;
         this.severity = severity;
         this.description = description;
         this.recomendation = recomendation;
@@ -54,8 +55,8 @@ public class Problem {
     public Heuristic getHeuristic() {
         return heuristic;
     }
-    public Long getUserId() {
-        return userId;
+    public User getUser() {
+        return user;
     }
     public Severity getSeverity() {
         return severity;
@@ -76,8 +77,8 @@ public class Problem {
     public void setId(Long id) {
         this.id = id;
     }
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public void setUser(User user) {
+        this.user = user;
     }
     public void setHeuristic(Heuristic heuristic) {
         this.heuristic = heuristic;
