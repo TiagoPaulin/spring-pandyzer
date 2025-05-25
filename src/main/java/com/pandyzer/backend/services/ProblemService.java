@@ -2,15 +2,16 @@ package com.pandyzer.backend.services;
 
 import com.pandyzer.backend.models.Heuristic;
 import com.pandyzer.backend.models.Problem;
+import com.pandyzer.backend.models.Severity;
 import com.pandyzer.backend.repositories.HeuristicRepository;
 import com.pandyzer.backend.repositories.ProblemRepository;
+import com.pandyzer.backend.repositories.SeverityRepository;
 import com.pandyzer.backend.services.exceptions.BadRequestException;
 import com.pandyzer.backend.services.exceptions.ResourceNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -20,6 +21,8 @@ public class ProblemService {
     private ProblemRepository repository;
     @Autowired
     private HeuristicRepository heuristicRepository;
+    @Autowired
+    private SeverityRepository severityRepository;
 
     public Problem findById (Long id) {
 
@@ -33,6 +36,7 @@ public class ProblemService {
 
         validate(obj);
         obj.setHeuristic(fetchFullHeuristic(obj));
+        obj.setSeverity(fetchFullSeverity(obj));
         return repository.save(obj);
 
     }
@@ -58,7 +62,7 @@ public class ProblemService {
         problem.setDescription(obj.getDescription());
         problem.setRecomendation(obj.getRecomendation());
         problem.setHeuristic(fetchFullHeuristic(obj));
-        problem.setSeverityId(obj.getSeverityId());
+        problem.setSeverity(fetchFullSeverity(obj));
 
     }
 
@@ -73,7 +77,7 @@ public class ProblemService {
         if (problem.getHeuristic() == null || problem.getHeuristic().getId() == null) {
             throw new BadRequestException("É preciso informar a heurística que está sendo violada.");
         }
-        if (problem.getSeverityId() == null || problem.getSeverityId() <= 0) {
+        if (problem.getSeverity() == null || problem.getSeverity().getId() == null) {
             throw new BadRequestException("É preciso o nível de severidade do problema.");
         }
 
@@ -89,6 +93,13 @@ public class ProblemService {
         Long id = obj.getHeuristic().getId();
         return heuristicRepository.findById(id)
                 .orElseThrow(() -> new BadRequestException("Heurística com ID " + id + " não encontrada."));
+    }
+
+    private Severity fetchFullSeverity(Problem obj) {
+
+        Long id = obj.getSeverity().getId();
+        return severityRepository.findById(id).orElseThrow(() -> new BadRequestException("Severidade com ID " + id + " não encontrada."));
+
     }
 
 }

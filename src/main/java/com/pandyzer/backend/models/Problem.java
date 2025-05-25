@@ -16,8 +16,6 @@ public class Problem {
     private Long id;
     @Column(name = "usuarioId")
     private Long userId;
-    @Column(name = "severidadeId")
-    private Long severityId;
     @Column(name = "descricao")
     private String description;
     @Column(name = "recomendacao")
@@ -27,15 +25,18 @@ public class Problem {
     @ManyToOne
     @JoinColumn(name = "heuristicaId", nullable = false)
     private Heuristic heuristic;
+    @ManyToOne
+    @JoinColumn(name = "severidadeId", nullable = false)
+    private Severity severity;
 
     public Problem () {}
 
-    public Problem (Long id, Heuristic heuristic, Long userId, Long severityId, String description, String recomendation, Date register) {
+    public Problem (Long id, Long userId, String description, String recomendation, Date register, Heuristic heuristic, Severity severity) {
 
         this.id = id;
         this.heuristic = heuristic;
         this.userId = userId;
-        this.severityId = severityId;
+        this.severity = severity;
         this.description = description;
         this.recomendation = recomendation;
         this.register = register;
@@ -51,8 +52,8 @@ public class Problem {
     public Long getUserId() {
         return userId;
     }
-    public Long getSeverityId() {
-        return severityId;
+    public Severity getSeverity() {
+        return severity;
     }
     public String getDescription() {
         return description;
@@ -73,8 +74,8 @@ public class Problem {
     public void setHeuristic(Heuristic heuristic) {
         this.heuristic = heuristic;
     }
-    public void setSeverityId(Long severityId) {
-        this.severityId = severityId;
+    public void setSeverity(Severity severity) {
+        this.severity = severity;
     }
     public void setDescription(String description) {
         this.description = description;
