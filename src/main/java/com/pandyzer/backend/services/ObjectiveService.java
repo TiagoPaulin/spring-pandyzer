@@ -1,6 +1,8 @@
 package com.pandyzer.backend.services;
 
+import com.pandyzer.backend.models.Evaluation;
 import com.pandyzer.backend.models.Objective;
+import com.pandyzer.backend.repositories.EvaluationRepository;
 import com.pandyzer.backend.repositories.ObjectiveRepository;
 import com.pandyzer.backend.services.exceptions.BadRequestException;
 import com.pandyzer.backend.services.exceptions.ResourceNotFoundException;
@@ -15,6 +17,8 @@ public class ObjectiveService {
 
     @Autowired
     private ObjectiveRepository repository;
+    @Autowired
+    private EvaluationRepository evaluationRepository;
 
     public Objective findById (Long id) {
 
@@ -27,6 +31,7 @@ public class ObjectiveService {
     public Objective insert (Objective obj) {
 
         validate(obj);
+        obj.setEvaluation(fetchFullEvaluation(obj));
         return repository.save(obj);
 
     }
@@ -50,6 +55,7 @@ public class ObjectiveService {
     private void updateData(Objective objective, Objective obj) {
 
         objective.setDescription(obj.getDescription());
+        objective.setEvaluation(fetchFullEvaluation(obj));
 
     }
 
@@ -58,7 +64,7 @@ public class ObjectiveService {
         if (isNullOrEmptyOrBlank(objective.getDescription())) {
             throw new BadRequestException("É necessário informar a descrição do objetivo.");
         }
-        if (objective.getEvaluationId() == null) {
+        if (objective.getEvaluation() == null || objective.getEvaluation().getId() == null) {
             throw new BadRequestException("O objetivo deve estar relacionado a uma avaliação.");
         }
 
@@ -68,6 +74,11 @@ public class ObjectiveService {
 
         return value == null || value.trim().isEmpty();
 
+    }
+
+    private Evaluation fetchFullEvaluation(Objective obj) {
+        Long id = obj.getEvaluation().getId();
+        return evaluationRepository.findById(id).orElseThrow(() -> new BadRequestException("Avaliação com ID " + id + " não encontrada."));
     }
 
 }
