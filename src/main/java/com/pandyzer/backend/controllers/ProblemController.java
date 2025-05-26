@@ -1,6 +1,7 @@
 package com.pandyzer.backend.controllers;
 
 import com.pandyzer.backend.models.Problem;
+import com.pandyzer.backend.models.UserType;
 import com.pandyzer.backend.services.ProblemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -8,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequestMapping(value = "/problems")
@@ -15,6 +17,13 @@ public class ProblemController {
 
     @Autowired
     private ProblemService service;
+
+    @GetMapping
+    public ResponseEntity<List<Problem>> findAll() {
+        List<Problem> list = service.findAll();
+        return ResponseEntity.ok().body(list);
+    }
+
 
     @GetMapping(value = "/{id}")
     public ResponseEntity<Problem> findById (@PathVariable Long id) {

@@ -11,6 +11,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -24,6 +25,12 @@ public class EvaluatorService {
     private EvaluationRepository evaluationRepository;
     @Autowired
     private StatusRepository statusRepository;
+
+    public List<Evaluator> findAll () {
+
+        return repository.findAll();
+
+    }
 
     public Evaluator findById (Long id) {
 

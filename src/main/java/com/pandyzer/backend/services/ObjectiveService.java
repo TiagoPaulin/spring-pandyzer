@@ -3,6 +3,7 @@ package com.pandyzer.backend.services;
 import com.pandyzer.backend.models.Evaluation;
 import com.pandyzer.backend.models.Objective;
 import com.pandyzer.backend.models.Status;
+import com.pandyzer.backend.models.UserType;
 import com.pandyzer.backend.repositories.EvaluationRepository;
 import com.pandyzer.backend.repositories.ObjectiveRepository;
 import com.pandyzer.backend.repositories.StatusRepository;
@@ -12,6 +13,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -21,6 +23,12 @@ public class ObjectiveService {
     private ObjectiveRepository repository;
     @Autowired
     private EvaluationRepository evaluationRepository;
+
+    public List<Objective> findAll () {
+
+        return repository.findAll();
+
+    }
 
     public Objective findById (Long id) {
 
