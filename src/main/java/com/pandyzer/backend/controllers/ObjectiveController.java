@@ -2,6 +2,7 @@ package com.pandyzer.backend.controllers;
 
 import com.pandyzer.backend.models.Objective;
 import com.pandyzer.backend.models.User;
+import com.pandyzer.backend.models.UserType;
 import com.pandyzer.backend.services.ObjectiveService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequestMapping(value = "/objectives")
@@ -16,6 +18,13 @@ public class ObjectiveController {
 
     @Autowired
     private ObjectiveService service;
+
+    @GetMapping
+    public ResponseEntity<List<Objective>> findAll() {
+        List<Objective> list = service.findAll();
+        return ResponseEntity.ok().body(list);
+    }
+
 
     @GetMapping(value = "/{id}")
     public ResponseEntity<Objective> findById (@PathVariable Long id) {

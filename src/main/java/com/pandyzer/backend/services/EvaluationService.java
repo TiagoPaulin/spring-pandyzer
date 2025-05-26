@@ -1,9 +1,6 @@
 package com.pandyzer.backend.services;
 
-import com.pandyzer.backend.models.ApplicationType;
-import com.pandyzer.backend.models.Evaluation;
-import com.pandyzer.backend.models.Status;
-import com.pandyzer.backend.models.User;
+import com.pandyzer.backend.models.*;
 import com.pandyzer.backend.repositories.ApplicationTypeRepository;
 import com.pandyzer.backend.repositories.EvaluationRepository;
 import com.pandyzer.backend.repositories.StatusRepository;
@@ -14,6 +11,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -25,6 +23,12 @@ public class EvaluationService {
     private UserRepository userRepository;
     @Autowired
     private ApplicationTypeRepository applicationTypeRepository;
+
+    public List<Evaluation> findAll () {
+
+        return repository.findAll();
+
+    }
 
     public Evaluation findById (Long id) {
 

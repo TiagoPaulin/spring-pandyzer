@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequestMapping(value = "/usertype")
@@ -15,6 +16,12 @@ public class UserTypeController {
 
     @Autowired
     private UserTypeService service;
+
+    @GetMapping
+    public ResponseEntity<List<UserType>> findAll() {
+        List<UserType> list = service.findAll();
+        return ResponseEntity.ok().body(list);
+    }
 
     @GetMapping(value = "/{id}")
     public ResponseEntity<UserType> findById (@PathVariable Long id) {

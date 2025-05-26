@@ -2,6 +2,7 @@ package com.pandyzer.backend.controllers;
 
 import com.pandyzer.backend.models.Severity;
 import com.pandyzer.backend.models.User;
+import com.pandyzer.backend.models.UserType;
 import com.pandyzer.backend.services.SeverityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequestMapping(value = "/severities")
@@ -16,6 +18,13 @@ public class SeverityController {
 
     @Autowired
     private SeverityService service;
+
+    @GetMapping
+    public ResponseEntity<List<Severity>> findAll() {
+        List<Severity> list = service.findAll();
+        return ResponseEntity.ok().body(list);
+    }
+
 
     @GetMapping(value = "/{id}")
     public ResponseEntity<Severity> findById (@PathVariable Long id) {

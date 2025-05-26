@@ -1,6 +1,7 @@
 package com.pandyzer.backend.services;
 
 import com.pandyzer.backend.models.ApplicationType;
+import com.pandyzer.backend.models.UserType;
 import com.pandyzer.backend.repositories.ApplicationTypeRepository;
 import com.pandyzer.backend.services.exceptions.BadRequestException;
 import com.pandyzer.backend.services.exceptions.ResourceNotFoundException;
@@ -8,6 +9,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -15,6 +17,12 @@ public class ApplicationTypeService {
 
     @Autowired
     private ApplicationTypeRepository repository;
+
+    public List<ApplicationType> findAll () {
+
+        return repository.findAll();
+
+    }
 
     public ApplicationType findById (Long id) {
 
