@@ -4,11 +4,13 @@ import com.pandyzer.backend.models.Evaluation;
 import com.pandyzer.backend.models.UserType;
 import com.pandyzer.backend.services.EvaluationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -30,6 +32,18 @@ public class EvaluationController {
 
         Evaluation obj = service.findById(id);
         return ResponseEntity.ok().body(obj);
+
+    }
+
+    @GetMapping("/filter")
+    public ResponseEntity<List<Evaluation>> filterEvaluations(
+            @RequestParam(required = false) String description,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date finalDate,
+            @RequestParam(required = false) Long statusId) {
+
+        List<Evaluation> list = service.filterEvaluations(description, startDate, finalDate, statusId);
+        return ResponseEntity.ok().body(list);
 
     }
 

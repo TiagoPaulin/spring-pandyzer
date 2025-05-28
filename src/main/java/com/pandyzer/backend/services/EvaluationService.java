@@ -11,6 +11,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,6 +29,10 @@ public class EvaluationService {
 
         return repository.findAll();
 
+    }
+
+    public List<Evaluation> filterEvaluations(String description, Date startDate, Date finalDate, Long statusId) {
+        return repository.findByFilters(description, startDate, finalDate, statusId);
     }
 
     public Evaluation findById (Long id) {
