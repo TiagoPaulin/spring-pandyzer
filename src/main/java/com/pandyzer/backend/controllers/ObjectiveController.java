@@ -25,6 +25,11 @@ public class ObjectiveController {
         return ResponseEntity.ok().body(list);
     }
 
+    @GetMapping("/evaluation/{evaluationId}")
+    public ResponseEntity<List<Objective>> findByEvaluationId (@PathVariable Long evaluationId) {
+        List<Objective> list = service.findByEvaluationId(evaluationId);
+        return ResponseEntity.ok(list);
+    }
 
     @GetMapping(value = "/{id}")
     public ResponseEntity<Objective> findById (@PathVariable Long id) {
