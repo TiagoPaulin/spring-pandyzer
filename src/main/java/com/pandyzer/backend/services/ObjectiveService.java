@@ -30,6 +30,10 @@ public class ObjectiveService {
 
     }
 
+    public List<Objective> findByEvaluationId (Long evaluationId) {
+        return repository.findByEvaluationId(evaluationId);
+    }
+
     public Objective findById (Long id) {
 
         Optional<Objective> obj = repository.findById(id);
