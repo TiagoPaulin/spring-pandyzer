@@ -1,5 +1,6 @@
 package com.pandyzer.backend.controllers.exceptions;
 
+import com.pandyzer.backend.chat.services.exceptions.GeminiException;
 import com.pandyzer.backend.services.exceptions.BadRequestException;
 import com.pandyzer.backend.services.exceptions.ResourceNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -30,6 +31,18 @@ public class GlobalExceptionHandler {
 
         String error = "Data Error";
         HttpStatus status = HttpStatus.BAD_REQUEST;
+
+        StandartError standartError = new StandartError(Instant.now(), status.value(), error, e.getMessage(), request.getRequestURI());
+
+        return ResponseEntity.status(status).body(standartError);
+
+    }
+
+    @ExceptionHandler(GeminiException.class)
+    public ResponseEntity<StandartError> geminiException(GeminiException e, HttpServletRequest request) {
+
+        String error = "API Error";
+        HttpStatus status = HttpStatus.BAD_GATEWAY;
 
         StandartError standartError = new StandartError(Instant.now(), status.value(), error, e.getMessage(), request.getRequestURI());
 
