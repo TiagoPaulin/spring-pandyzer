@@ -35,6 +35,14 @@ public class UserService {
 
     }
 
+    public User findByEmail (String email) {
+
+        Optional<User> obj = repository.findByEmail(email);
+
+        return obj.orElseThrow(() -> new ResourceNotFoundException("Usuário", email));
+
+    }
+
     public User insert (User obj) {
 
         validate(obj);
