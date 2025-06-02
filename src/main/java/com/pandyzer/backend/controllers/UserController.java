@@ -33,6 +33,14 @@ public class UserController {
 
     }
 
+    @GetMapping(value = "/email/{email}")
+    public ResponseEntity<User> findById (@PathVariable String email) {
+
+        User obj = service.findByEmail(email);
+        return ResponseEntity.ok().body(obj);
+
+    }
+
     @PostMapping
     public ResponseEntity<User> insert (@RequestBody User obj) {
 
