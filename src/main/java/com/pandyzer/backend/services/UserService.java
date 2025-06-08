@@ -43,6 +43,10 @@ public class UserService {
 
     }
 
+    public Optional<List<User>> findAvaliadores () {
+        return repository.findByUserTypeId(Long.valueOf(1));
+    }
+
     public User insert (User obj) {
 
         validate(obj);

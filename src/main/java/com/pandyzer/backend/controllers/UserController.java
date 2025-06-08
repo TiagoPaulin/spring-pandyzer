@@ -1,7 +1,6 @@
 package com.pandyzer.backend.controllers;
 
 import com.pandyzer.backend.models.User;
-import com.pandyzer.backend.models.UserType;
 import com.pandyzer.backend.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +9,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping(value = "/users")
@@ -31,6 +31,12 @@ public class UserController {
         User obj = service.findById(id);
         return ResponseEntity.ok().body(obj);
 
+    }
+
+    @GetMapping(value = "/avaliadores")
+    public ResponseEntity<Optional<List<User>>> findAvaliadores() {
+        Optional<List<User>> obj = service.findAvaliadores();
+        return ResponseEntity.ok().body(obj);
     }
 
     @GetMapping(value = "/email/{email}")
