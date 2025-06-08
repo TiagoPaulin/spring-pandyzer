@@ -33,6 +33,14 @@ public class EvaluatorController {
 
     }
 
+    @GetMapping(value = "/evaluation/{id}")
+    public ResponseEntity<List<Evaluator>> findByIdEvaluation (@PathVariable Long id) {
+
+        List<Evaluator> obj = service.findByEvaluationId(id);
+        return ResponseEntity.ok().body(obj);
+
+    }
+
     @PostMapping
     public ResponseEntity<Evaluator> insert (@RequestBody Evaluator obj) {
 

@@ -40,6 +40,10 @@ public class EvaluatorService {
 
     }
 
+    public List<Evaluator> findByEvaluationId (Long evaluationId) {
+        return repository.findByEvaluationId(evaluationId);
+    }
+
     public Evaluator insert (Evaluator obj) {
 
         validate(obj);
