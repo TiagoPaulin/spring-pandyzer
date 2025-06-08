@@ -1,7 +1,7 @@
 package com.pandyzer.backend.controllers;
 
 import com.pandyzer.backend.models.User;
-import com.pandyzer.backend.models.auxiliares.Login;
+import com.pandyzer.backend.models.dto.LoginDTO;
 import com.pandyzer.backend.services.LoginService;
 import com.pandyzer.backend.services.exceptions.login.EmailNaoEncontradoException;
 import com.pandyzer.backend.services.exceptions.login.SenhaIncorretaException;
@@ -21,7 +21,7 @@ public class LoginController {
     private LoginService loginService;
 
     @PostMapping
-    public ResponseEntity<?> login(@RequestBody Login dados) {
+    public ResponseEntity<?> login(@RequestBody LoginDTO dados) {
         try {
             User usuarioAutenticado = loginService.autenticar(dados);
             return ResponseEntity.ok(usuarioAutenticado);

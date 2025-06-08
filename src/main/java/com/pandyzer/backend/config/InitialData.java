@@ -1,13 +1,7 @@
 package com.pandyzer.backend.config;
 
-import com.pandyzer.backend.models.Heuristic;
-import com.pandyzer.backend.models.Severity;
-import com.pandyzer.backend.models.User;
-import com.pandyzer.backend.models.UserType;
-import com.pandyzer.backend.repositories.HeuristicRepository;
-import com.pandyzer.backend.repositories.SeverityRepository;
-import com.pandyzer.backend.repositories.UserRepository;
-import com.pandyzer.backend.repositories.UserTypeRepository;
+import com.pandyzer.backend.models.*;
+import com.pandyzer.backend.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Configuration;
@@ -22,15 +16,16 @@ public class InitialData implements CommandLineRunner {
 
     @Autowired
     SeverityRepository severityRepository;
-
     @Autowired
     HeuristicRepository heuristicRepository;
-
     @Autowired
     UserTypeRepository userTypeRepository;
-
     @Autowired
     UserRepository userRepository;
+    @Autowired
+    StatusRepository statusRepository;
+    @Autowired
+    ApplicationTypeRepository applicationTypeRepository;
 
     @Override
     public void run(String... args) throws Exception {
@@ -64,6 +59,24 @@ public class InitialData implements CommandLineRunner {
         User admin = new User(null, "admin", "admin@pandyzer.com", "admin123", 1, type3, new java.sql.Date(new Date().getTime()));
 
         userRepository.save(admin);
+
+        Status status1 = new Status(null, "Em andamento");
+        Status status2 = new Status(null, "Concluido");
+
+        statusRepository.saveAll(Arrays.asList(status1, status2));
+
+        ApplicationType applicationType1 = new ApplicationType(null, "E-commerce");
+        ApplicationType applicationType2 = new ApplicationType(null, "Aplicativo de Finanças");
+        ApplicationType applicationType3 = new ApplicationType(null, "Sistema de Gestão Escolar");
+        ApplicationType applicationType4 = new ApplicationType(null, "Portal de Notícias");
+        ApplicationType applicationType5 = new ApplicationType(null, "Aplicativo de Saúde");
+        ApplicationType applicationType6 = new ApplicationType(null, "Rede Social");
+        ApplicationType applicationType7 = new ApplicationType(null, "Sistema de RH");
+        ApplicationType applicationType8 = new ApplicationType(null, "Aplicativo de Delivery");
+        ApplicationType applicationType9 = new ApplicationType(null, "Dashboard de BI");
+        ApplicationType applicationType10 = new ApplicationType(null, "Sistema de Help Desk");
+
+        applicationTypeRepository.saveAll(Arrays.asList(applicationType1, applicationType2, applicationType3, applicationType4, applicationType5, applicationType6, applicationType7, applicationType8, applicationType9, applicationType10));
 
     }
 

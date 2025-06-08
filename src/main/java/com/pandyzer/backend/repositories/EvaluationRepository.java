@@ -25,7 +25,13 @@ public interface EvaluationRepository extends JpaRepository<Evaluation, Long> {
             @Param("statusId") Long statusId
     );
 
-
-
+    @Query(value = """
+        SELECT COUNT(*)
+        FROM evaluator ev
+        INNER JOIN status s ON ev.status_id = s.status_id
+        WHERE ev.avaliacao_id = :evaluationId
+          AND LOWER(s.descricao) = 'concluído'
+    """, nativeQuery = true)
+    Integer countEvaluatorsWithConcludedStatus(@Param("evaluationId") Long evaluationId);
 
 }
