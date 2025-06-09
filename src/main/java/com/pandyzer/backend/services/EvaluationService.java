@@ -32,7 +32,15 @@ public class EvaluationService {
     }
 
     public List<Evaluation> filterEvaluations(String description, Date startDate, Date finalDate, Long statusId) {
+
         return repository.findByFilters(description, startDate, finalDate, statusId);
+
+    }
+
+    public Integer countEvaluations (Long id) {
+
+        return repository.countEvaluatorsWithConcludedStatus(id);
+
     }
 
     public Evaluation findById (Long id) {

@@ -1,7 +1,7 @@
 package com.pandyzer.backend.services;
 
 import com.pandyzer.backend.models.User;
-import com.pandyzer.backend.models.auxiliares.Login;
+import com.pandyzer.backend.models.dto.LoginDTO;
 import com.pandyzer.backend.repositories.UserRepository;
 import com.pandyzer.backend.services.exceptions.login.EmailNaoEncontradoException;
 import com.pandyzer.backend.services.exceptions.login.SenhaIncorretaException;
@@ -16,7 +16,7 @@ public class LoginService {
     @Autowired
     private UserRepository userRepository;
 
-    public User autenticar(Login dadosLogin){
+    public User autenticar(LoginDTO dadosLogin){
         Optional<User> usuarioOptional = userRepository.findByEmail(dadosLogin.getEmail());
 
         if (usuarioOptional.isEmpty()){

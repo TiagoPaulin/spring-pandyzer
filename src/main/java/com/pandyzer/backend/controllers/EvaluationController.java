@@ -2,6 +2,7 @@ package com.pandyzer.backend.controllers;
 
 import com.pandyzer.backend.models.Evaluation;
 import com.pandyzer.backend.models.UserType;
+import com.pandyzer.backend.models.dto.QuantityDTO;
 import com.pandyzer.backend.services.EvaluationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -26,7 +27,6 @@ public class EvaluationController {
         return ResponseEntity.ok().body(list);
     }
 
-
     @GetMapping(value = "/{id}")
     public ResponseEntity<Evaluation> findById (@PathVariable Long id) {
 
@@ -44,6 +44,14 @@ public class EvaluationController {
 
         List<Evaluation> list = service.filterEvaluations(description, startDate, finalDate, statusId);
         return ResponseEntity.ok().body(list);
+
+    }
+
+    @GetMapping("/count/{id}")
+    public ResponseEntity<QuantityDTO> countEvaluations (@PathVariable Long id) {
+
+        QuantityDTO obj = new QuantityDTO(service.countEvaluations(id));
+        return  ResponseEntity.ok().body(obj);
 
     }
 

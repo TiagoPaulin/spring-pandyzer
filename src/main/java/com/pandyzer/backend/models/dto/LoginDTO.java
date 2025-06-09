@@ -1,13 +1,13 @@
-package com.pandyzer.backend.models.auxiliares;
+package com.pandyzer.backend.models.dto;
 
-public class Login {
+public class LoginDTO {
     private String email;
     private String senha;
 
-    public Login() {
+    public LoginDTO() {
     }
 
-    public Login(String email, String senha) {
+    public LoginDTO(String email, String senha) {
         this.email = email;
         this.senha = senha;
     }
