@@ -67,5 +67,11 @@ public class EvaluatorController {
 
     }
 
+    @PutMapping(value = "/{idUser}/{idEvaluation}/status/{idStatus}")
+    public ResponseEntity<Evaluator> updateStatusEvaluator (@PathVariable Long idUser, @PathVariable Long idEvaluation, @PathVariable Long idStatus) {
 
+        Evaluator evaluator = service.updateStatusEvaluator(idUser, idEvaluation, idStatus);
+        return ResponseEntity.ok().body(evaluator);
+
+    }
 }
