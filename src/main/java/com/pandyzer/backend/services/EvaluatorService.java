@@ -78,6 +78,19 @@ public class EvaluatorService {
 
     }
 
+    public Evaluator updateStatusEvaluator(Long idUser, Long idEvaluation, Long idStatus){
+        Evaluator evaluator = repository.findByUserIdAndEvaluationId(idUser, idEvaluation);
+        if (evaluator == null) {
+            throw new ResourceNotFoundException("Avaliador não encontrado para os IDs fornecidos.", idUser);
+        }
+
+        Status status = statusRepository.findById(idStatus)
+                .orElseThrow(() -> new ResourceNotFoundException("Status", idStatus));
+
+        evaluator.setStatus(status);
+        return repository.save(evaluator);
+    }
+
     private void validate(Evaluator evaluator) {
 
         if (evaluator.getUser() == null) {
