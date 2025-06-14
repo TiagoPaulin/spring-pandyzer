@@ -31,6 +31,18 @@ public class ProblemService {
 
     }
 
+    public List<Problem> findByObjectiveId(Long id) {
+
+        return repository.findByObjective_Id(id);
+
+    }
+
+    public List<Problem> findByObjectiveIdAndUserId (Long objectiveId, Long userId) {
+
+        return repository.findByObjective_IdAndUser_Id(objectiveId, userId);
+
+    }
+
     public Problem findById (Long id) {
 
         Optional<Problem> obj = repository.findById(id);

@@ -24,6 +24,21 @@ public class ProblemController {
         return ResponseEntity.ok().body(list);
     }
 
+    @GetMapping(value = "/objectives/{id}")
+    public ResponseEntity<List<Problem>> findByObjectiveId (@PathVariable Long id) {
+
+        List<Problem> list = service.findByObjectiveId(id);
+        return ResponseEntity.ok().body(list);
+
+    }
+
+    @GetMapping(value = "/objectives/{id}/users/{id}")
+    public ResponseEntity<List<Problem>> findByObjectiveIdAndUserId (@PathVariable Long objectiveId, @PathVariable Long userId) {
+
+        List<Problem> list = service.findByObjectiveIdAndUserId(objectiveId, userId);
+        return ResponseEntity.ok().body(list);
+
+    }
 
     @GetMapping(value = "/{id}")
     public ResponseEntity<Problem> findById (@PathVariable Long id) {
