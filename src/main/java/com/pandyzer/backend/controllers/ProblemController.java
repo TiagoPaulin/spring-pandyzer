@@ -32,7 +32,7 @@ public class ProblemController {
 
     }
 
-    @GetMapping(value = "/objectives/{id}/users/{id}")
+    @GetMapping(value = "/objectives/{objectiveId}/users/{userId}")
     public ResponseEntity<List<Problem>> findByObjectiveIdAndUserId (@PathVariable Long objectiveId, @PathVariable Long userId) {
 
         List<Problem> list = service.findByObjectiveIdAndUserId(objectiveId, userId);
