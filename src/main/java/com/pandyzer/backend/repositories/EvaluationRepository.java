@@ -34,4 +34,10 @@ public interface EvaluationRepository extends JpaRepository<Evaluation, Long> {
     """, nativeQuery = true)
     Integer countEvaluatorsWithConcludedStatus(@Param("evaluationId") Long evaluationId);
 
+    /**
+     * Conta as avaliações criadas por um usuário específico dentro de um período.
+     * Usaremos o campo 'register' (data_cadastro) para isso.
+     * O Spring Data JPA cria a query automaticamente a partir do nome do método.
+     */
+    Integer countByUserIdAndRegisterBetween(Long userId, Date startDate, Date endDate);
 }
