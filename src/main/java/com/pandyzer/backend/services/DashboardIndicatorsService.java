@@ -21,26 +21,16 @@ public class DashboardIndicatorsService {
     private EvaluatorRepository evaluatorRepository;
 
     public DashboardIndicators getIndicatorsByUserId(Long userId){
-        // 1. Obter o intervalo de datas para o mês atual
-        LocalDate today = LocalDate.now();
-        LocalDate firstDayOfMonth = today.with(TemporalAdjusters.firstDayOfMonth());
-        LocalDate lastDayOfMonth = today.with(TemporalAdjusters.lastDayOfMonth());
+        // Busca a contagem para cada status diretamente do repositório
+        Integer emAndamento = evaluatorRepository.countByUserIdAndStatusId(userId, 1L); // Status ID 1
+        Integer concluidas = evaluatorRepository.countByUserIdAndStatusId(userId, 2L);  // Status ID 2
+        Integer naoIniciadas = evaluatorRepository.countByUserIdAndStatusId(userId, 3L); // Status ID 3
 
-        // Converter LocalDate para Date
-        Date startDate = Date.from(firstDayOfMonth.atStartOfDay(ZoneId.systemDefault()).toInstant());
-        Date endDate = Date.from(lastDayOfMonth.atTime(23, 59, 59).atZone(ZoneId.systemDefault()).toInstant());
-        Date currentDate = new Date();
-
-        // 2. Buscar os dados usando os repositories
-        Integer createdCount = evaluationRepository.countByUserIdAndRegisterBetween(userId, startDate, endDate);
-        Integer completedCount = evaluatorRepository.countCompletedForUserInPeriod(userId, startDate, endDate);
-        Integer ongoingCount = evaluatorRepository.countOngoingForUser(userId, currentDate);
-
-        // 3. Montar e retornar o DTO
+        // Monta e retorna o DTO
         DashboardIndicators indicators = new DashboardIndicators();
-        indicators.setAvaliacoesCriadas(createdCount != null ? createdCount : 0);
-        indicators.setAvaliacoesFeitas(completedCount != null ? completedCount : 0);
-        indicators.setAvaliacoesEmAndamento(ongoingCount != null ? ongoingCount : 0);
+        indicators.setAvaliacoesEmAndamento(emAndamento);
+        indicators.setAvaliacoesConcluidas(concluidas);
+        indicators.setAvaliacoesNaoIniciadas(naoIniciadas);
 
         return indicators;
     }
