@@ -24,6 +24,8 @@ public class ProblemService {
     private ObjectiveRepository objectiveRepository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private LogService logService;
 
     public List<Problem> findAll () {
 
@@ -51,6 +53,7 @@ public class ProblemService {
 
     }
 
+    @Transactional
     public Problem insert (Problem obj) {
 
         validate(obj);
@@ -58,7 +61,12 @@ public class ProblemService {
         obj.setSeverity(fetchFullSeverity(obj));
         obj.setObjective(fetchFullObjective(obj));
         obj.setUser(fetchFullUser(obj));
-        return repository.save(obj);
+
+        Problem savedProblem = repository.save(obj);
+        String description = savedProblem.getUser().getName() + " registrou um novo problema na avaliação '" + savedProblem.getObjective().getEvaluation().getDescription() + "'";
+        createLog(savedProblem.getUser(), savedProblem.getObjective().getEvaluation(), description);
+
+        return savedProblem;
 
     }
 
@@ -143,4 +151,11 @@ public class ProblemService {
 
     }
 
+    private void createLog(User user, Evaluation evaluation, String description) {
+        Log log = new Log();
+        log.setUser(user);
+        log.setEvaluation(evaluation);
+        log.setDescription(description);
+        logService.insert(log);
+    }
 }

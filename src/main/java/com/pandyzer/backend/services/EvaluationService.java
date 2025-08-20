@@ -24,6 +24,8 @@ public class EvaluationService {
     private UserRepository userRepository;
     @Autowired
     private ApplicationTypeRepository applicationTypeRepository;
+    @Autowired
+    private LogService logService;
 
     public List<Evaluation> findAll () {
 
@@ -51,12 +53,19 @@ public class EvaluationService {
 
     }
 
+    @Transactional
     public Evaluation insert (Evaluation obj) {
 
         validate(obj);
+        User creator = fetchFullUser(obj);
         obj.setUser(fetchFullUser(obj));
         obj.setApplicationType(fetchFullApplicationType(obj));
-        return repository.save(obj);
+
+        Evaluation savedEvaluation = repository.save(obj);
+
+        createLog(creator, savedEvaluation, "criou a avaliação");
+
+        return  savedEvaluation;
 
     }
 
@@ -72,8 +81,11 @@ public class EvaluationService {
         validate(obj);
         Evaluation evaluation = repository.getReferenceById(id);
         updateData(evaluation, obj);
-        return repository.save(evaluation);
+        Evaluation updatedEvaluation = repository.save(evaluation);
 
+        createLog(updatedEvaluation.getUser(), updatedEvaluation, "atualizou os detalhes da avaliação");
+
+        return updatedEvaluation;
     }
 
     private void updateData(Evaluation evaluation, Evaluation obj) {
@@ -129,6 +141,14 @@ public class EvaluationService {
         Long id = obj.getApplicationType().getId();
         return applicationTypeRepository.findById(id).orElseThrow(() -> new BadRequestException("Tipo de aplicação com ID " + id + " não encontrado."));
 
+    }
+
+    private void createLog(User user, Evaluation evaluation, String action) {
+        Log log = new Log();
+        log.setUser(user);
+        log.setEvaluation(evaluation);
+        log.setDescription(user.getName() + " " + action + ": '" + evaluation.getDescription() + "'");
+        logService.insert(log);
     }
 
 }

@@ -25,6 +25,8 @@ public class EvaluatorService {
     private EvaluationRepository evaluationRepository;
     @Autowired
     private StatusRepository statusRepository;
+    @Autowired
+    private LogService logService;
 
     public List<Evaluator> findAll () {
 
@@ -44,13 +46,18 @@ public class EvaluatorService {
         return repository.findByEvaluationId(evaluationId);
     }
 
+    @Transactional
     public Evaluator insert (Evaluator obj) {
 
         validate(obj);
         obj.setUser(fetchFullUser(obj));
         obj.setEvaluation(fetchFullEvaluation(obj));
         obj.setStatus(fetchFullStatus(obj));
-        return repository.save(obj);
+        Evaluator savedEvaluator = repository.save(obj);
+
+        String description = savedEvaluator.getUser().getName() + " foi adicionado(a) como avaliador(a) na avaliação '" + savedEvaluator.getEvaluation().getDescription() + "'";
+        createLog(savedEvaluator.getUser(), savedEvaluator.getEvaluation(), description);
+        return savedEvaluator;
 
     }
 
@@ -78,17 +85,25 @@ public class EvaluatorService {
 
     }
 
+    @Transactional
     public Evaluator updateStatusEvaluator(Long idUser, Long idEvaluation, Long idStatus){
         Evaluator evaluator = repository.findByUserIdAndEvaluationId(idUser, idEvaluation);
         if (evaluator == null) {
             throw new ResourceNotFoundException("Avaliador não encontrado para os IDs fornecidos.", idUser);
         }
 
-        Status status = statusRepository.findById(idStatus)
+        Status newStatus = statusRepository.findById(idStatus)
                 .orElseThrow(() -> new ResourceNotFoundException("Status", idStatus));
 
-        evaluator.setStatus(status);
-        return repository.save(evaluator);
+        String oldStatusDesc = evaluator.getStatus().getDescription();
+        evaluator.setStatus(newStatus);
+
+        Evaluator updatedEvaluator = repository.save(evaluator);
+
+        String description = updatedEvaluator.getUser().getName() + " alterou o status de '" + oldStatusDesc + "' para '" + newStatus.getDescription() + "' na avaliação '" + updatedEvaluator.getEvaluation().getDescription() + "'";
+        createLog(updatedEvaluator.getUser(), updatedEvaluator.getEvaluation(), description);
+
+        return updatedEvaluator;
     }
 
     private void validate(Evaluator evaluator) {
@@ -126,5 +141,12 @@ public class EvaluatorService {
 
     }
 
+    private void createLog(User user, Evaluation evaluation, String description) {
+        Log log = new Log();
+        log.setUser(user);
+        log.setEvaluation(evaluation);
+        log.setDescription(description);
+        logService.insert(log);
+    }
 
 }
