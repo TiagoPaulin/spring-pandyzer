@@ -53,6 +53,10 @@ public class EvaluationService {
 
     }
 
+    public List<Evaluation> findCommunityEvaluations(Long userId) {
+        return repository.findByIsPublicTrueAndUser_IdNot(userId);
+    }
+
     @Transactional
     public Evaluation insert (Evaluation obj) {
 
@@ -96,7 +100,8 @@ public class EvaluationService {
         evaluation.setLink(obj.getLink());
         evaluation.setApplicationType(fetchFullApplicationType(obj));
         evaluation.setUser(fetchFullUser(obj));
-
+        evaluation.setPublic(obj.getPublic());
+        evaluation.setEvaluatorsLimit(obj.getEvaluatorsLimit());
     }
 
     private void validate(Evaluation evaluation) {

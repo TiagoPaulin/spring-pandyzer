@@ -34,6 +34,10 @@ public interface EvaluationRepository extends JpaRepository<Evaluation, Long> {
     """, nativeQuery = true)
     Integer countEvaluatorsWithConcludedStatus(@Param("evaluationId") Long evaluationId);
 
+    List<Evaluation> findByUser_Id(Long userId);
+
+    List<Evaluation> findByIsPublicTrueAndUser_IdNot(Long userId);
+
     /**
      * Conta as avaliações criadas por um usuário específico dentro de um período.
      * Usaremos o campo 'register' (data_cadastro) para isso.

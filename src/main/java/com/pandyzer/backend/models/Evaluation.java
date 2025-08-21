@@ -37,10 +37,14 @@ public class Evaluation {
     @OneToMany(mappedBy = "evaluation", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Evaluator> evaluators = new ArrayList<>();
+    @Column(name = "publico")
+    private Boolean isPublic = false;
+    @Column(name = "limite_avaliadores")
+    private Integer evaluatorsLimit;
 
     public Evaluation () {}
 
-    public Evaluation (Long id, String description, Date startDate, Date finalDate, String link, ApplicationType applicationType, Date register, User user) {
+    public Evaluation (Long id, String description, Date startDate, Date finalDate, String link, ApplicationType applicationType, Date register, User user, boolean isPublic, Integer evaluatorsLimit) {
 
         this.id = id;
         this.description = description;
@@ -50,7 +54,8 @@ public class Evaluation {
         this.applicationType = applicationType;
         this.register = register;
         this.user = user;
-
+        this.isPublic = isPublic;
+        this.evaluatorsLimit = evaluatorsLimit;
     }
 
     public Long getId() {
@@ -83,6 +88,12 @@ public class Evaluation {
     public List<Evaluator> getEvaluators() {
         return evaluators;
     }
+    public Boolean getPublic() {
+        return isPublic;
+    }
+    public Integer getEvaluatorsLimit() {
+        return evaluatorsLimit;
+    }
 
     public void setId(Long id) {
         this.id = id;
@@ -114,5 +125,10 @@ public class Evaluation {
     public void setEvaluators(List<Evaluator> evaluators) {
         this.evaluators = evaluators;
     }
-
+    public void setPublic(Boolean aPublic) {
+        isPublic = aPublic;
+    }
+    public void setEvaluatorsLimit(Integer evaluatorsLimit) {
+        this.evaluatorsLimit = evaluatorsLimit;
+    }
 }

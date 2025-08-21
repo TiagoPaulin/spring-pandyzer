@@ -35,6 +35,12 @@ public class EvaluationController {
 
     }
 
+    @GetMapping("/community/{userId}")
+    public ResponseEntity<List<Evaluation>> findCommunityEvaluations(@PathVariable Long userId) {
+        List<Evaluation> communityList = service.findCommunityEvaluations(userId);
+        return ResponseEntity.ok(communityList);
+    }
+
     @GetMapping("/filter")
     public ResponseEntity<List<Evaluation>> filterEvaluations(
             @RequestParam(required = false) String description,
