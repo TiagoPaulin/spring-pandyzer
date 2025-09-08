@@ -1,6 +1,8 @@
 package com.pandyzer.backend.models;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -37,10 +39,16 @@ public class Evaluation {
     @OneToMany(mappedBy = "evaluation", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Evaluator> evaluators = new ArrayList<>();
+    @Column(name = "publico")
+    @JsonProperty("isPublic")
+    @JsonAlias({"public"})
+    private Boolean isPublic = false;
+    @Column(name = "limite_avaliadores")
+    private Integer evaluatorsLimit;
 
     public Evaluation () {}
 
-    public Evaluation (Long id, String description, Date startDate, Date finalDate, String link, ApplicationType applicationType, Date register, User user) {
+    public Evaluation (Long id, String description, Date startDate, Date finalDate, String link, ApplicationType applicationType, Date register, User user, boolean isPublic, Integer evaluatorsLimit) {
 
         this.id = id;
         this.description = description;
@@ -50,7 +58,8 @@ public class Evaluation {
         this.applicationType = applicationType;
         this.register = register;
         this.user = user;
-
+        this.isPublic = isPublic;
+        this.evaluatorsLimit = evaluatorsLimit;
     }
 
     public Long getId() {
@@ -82,6 +91,9 @@ public class Evaluation {
     }
     public List<Evaluator> getEvaluators() {
         return evaluators;
+    }
+    public Integer getEvaluatorsLimit() {
+        return evaluatorsLimit;
     }
 
     public void setId(Long id) {
@@ -115,4 +127,27 @@ public class Evaluation {
         this.evaluators = evaluators;
     }
 
+    @JsonProperty("isPublic")
+    public Boolean getIsPublic() {
+        return isPublic;
+    }
+
+    @JsonProperty("isPublic")
+    public void setIsPublic(Boolean isPublic) {
+        this.isPublic = isPublic;
+    }
+
+    @JsonIgnore
+    public Boolean getPublic() {
+        return isPublic;
+    }
+
+    @JsonIgnore
+    public void setPublic(Boolean aPublic) {
+        this.isPublic = aPublic;
+    }
+
+    public void setEvaluatorsLimit(Integer evaluatorsLimit) {
+        this.evaluatorsLimit = evaluatorsLimit;
+    }
 }

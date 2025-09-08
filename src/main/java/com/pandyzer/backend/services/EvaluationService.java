@@ -1,11 +1,7 @@
 package com.pandyzer.backend.services;
 
-import com.pandyzer.backend.models.*;
-import com.pandyzer.backend.repositories.ApplicationTypeRepository;
+import com.pandyzer.backend.models.Evaluation;
 import com.pandyzer.backend.repositories.EvaluationRepository;
-import com.pandyzer.backend.repositories.StatusRepository;
-import com.pandyzer.backend.repositories.UserRepository;
-import com.pandyzer.backend.services.exceptions.BadRequestException;
 import com.pandyzer.backend.services.exceptions.ResourceNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,115 +16,76 @@ public class EvaluationService {
 
     @Autowired
     private EvaluationRepository repository;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private ApplicationTypeRepository applicationTypeRepository;
 
-    public List<Evaluation> findAll () {
-
+    public List<Evaluation> findAll() {
         return repository.findAll();
-
     }
 
-    public List<Evaluation> filterEvaluations(String description, Date startDate, Date finalDate, Long statusId) {
-
-        return repository.findByFilters(description, startDate, finalDate, statusId);
-
+    public Evaluation findById(Long id) {
+        Optional<Evaluation> opt = repository.findById(id);
+        return opt.orElseThrow(() -> new ResourceNotFoundException("Avaliação", id));
     }
 
-    public Integer countEvaluations (Long id) {
-
-        return repository.countEvaluatorsWithConcludedStatus(id);
-
+    public List<Evaluation> findCommunityEvaluations(Long userId) {
+        return repository.findByIsPublicTrueAndUser_IdNot(userId);
     }
 
-    public Evaluation findById (Long id) {
-
-        Optional<Evaluation> obj = repository.findById(id);
-
-        return obj.orElseThrow(() -> new ResourceNotFoundException("Avaliação", id));
-
+    public long countEvaluations(Long id) {
+        return repository.countByUserId(id);
     }
 
-    public Evaluation insert (Evaluation obj) {
+    public List<Evaluation> getByCreator(Integer userId) {
+        return repository.findByCreatorId(userId.longValue());
+    }
 
-        validate(obj);
-        obj.setUser(fetchFullUser(obj));
-        obj.setApplicationType(fetchFullApplicationType(obj));
+    public Evaluation insert(Evaluation obj) {
         return repository.save(obj);
-
     }
 
-    public void delete (Long id) {
-
+    public void delete(Long id) {
         repository.deleteById(id);
-
     }
 
     @Transactional
-    public Evaluation update (Long id, Evaluation obj) {
-
-        validate(obj);
-        Evaluation evaluation = repository.getReferenceById(id);
-        updateData(evaluation, obj);
-        return repository.save(evaluation);
-
+    public Evaluation update(Long id, Evaluation obj) {
+        Evaluation entity = findById(id);
+        // patch/merge conforme seu modelo
+        entity.setDescription(obj.getDescription());
+        entity.setStartDate(obj.getStartDate());
+        entity.setFinalDate(obj.getFinalDate());
+        entity.setPublic(obj.getPublic());
+        entity.setEvaluatorsLimit(obj.getEvaluatorsLimit());
+        entity.setUser(obj.getUser());
+        entity.setApplicationType(obj.getApplicationType());
+        return repository.save(entity);
     }
 
-    private void updateData(Evaluation evaluation, Evaluation obj) {
+    /**
+     * Filtro por título, status GERAL e criador.
+     * startDate/finalDate são mantidos na assinatura por compatibilidade,
+     * mas não são usados aqui (sua UI atual não envia datas).
+     */
+    public List<Evaluation> filterEvaluations(
+            String description,
+            Date startDate,
+            Date finalDate,
+            Long statusId,
+            Long creatorId
+    ) {
+        String desc = (description == null || description.trim().isEmpty())
+                ? null
+                : description.trim().toLowerCase();
 
-        evaluation.setDescription(obj.getDescription());
-        evaluation.setStartDate(obj.getStartDate());
-        evaluation.setFinalDate(obj.getFinalDate());
-        evaluation.setLink(obj.getLink());
-        evaluation.setApplicationType(fetchFullApplicationType(obj));
-        evaluation.setUser(fetchFullUser(obj));
-
+        return repository.filterByDescriptionCreatorAndComputedStatus(
+                desc,
+                creatorId,
+                statusId
+        );
     }
 
-    private void validate(Evaluation evaluation) {
-
-        if (isNullOrEmptyOrBlank(evaluation.getDescription())) {
-            throw new BadRequestException("É necessário fornecer uma descrição para a avaliação.");
-        }
-        if (isNullOrEmptyOrBlank(evaluation.getLink())) {
-            throw new BadRequestException("É necessário informar o link de acesso a interface.");
-        }
-        if (evaluation.getStartDate() == null) {
-            throw new BadRequestException("É necessário informar a data inicial da avaliação.");
-        }
-        if (evaluation.getFinalDate() == null) {
-            throw new BadRequestException("É necessário informar a data final da avaliação.");
-        }
-        if (evaluation.getFinalDate().before(evaluation.getStartDate())) {
-            throw new BadRequestException("A data final não pode ser anterior à data inicial.");
-        }
-        if (evaluation.getApplicationType() == null) {
-            throw new BadRequestException("É necessário informar um tipo de aplicação válido.");
-        }
-        if (evaluation.getUser() == null || evaluation.getUser().getId() == null) {
-            throw new BadRequestException("A avaliação deve estar relacionada a um usuário.");
-        }
-
-    }
-
-    private boolean isNullOrEmptyOrBlank(String value) {
-
-        return value == null || value.trim().isEmpty();
-
-    }
-
-    private User fetchFullUser(Evaluation obj) {
-        Long id = obj.getUser().getId();
-        return userRepository.findById(id).orElseThrow(() -> new BadRequestException("Usuário com ID " + id + " não encontrado."));
-    }
-
-    private ApplicationType fetchFullApplicationType(Evaluation obj) {
-
-        Long id = obj.getApplicationType().getId();
-        return applicationTypeRepository.findById(id).orElseThrow(() -> new BadRequestException("Tipo de aplicação com ID " + id + " não encontrado."));
-
+    // EvaluationService.java
+    public List<Evaluation> getByEvaluatorUser(Long userId) {
+        return repository.findByEvaluatorUserId(userId);
     }
 
 }
