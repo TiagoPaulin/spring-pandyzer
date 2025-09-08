@@ -56,9 +56,12 @@ public class InitialData implements CommandLineRunner {
 //
 //        heuristicRepository.saveAll(Arrays.asList(heuristic1, heuristic2, heuristic3, heuristic4, heuristic5, heuristic6, heuristic7, heuristic8, heuristic9, heuristic10));
 //
-//        User admin = new User(null, "admin", "admin@pandyzer.com", "admin123", 1, type3, new java.sql.Date(new Date().getTime()));
+//        User avaliador1 = new User(null, "bibo", "gabrielfjmeira@gmail.com", "senha123", 1, type1, new java.sql.Date(new Date().getTime()));
+//        User avaliador2 = new User(null, "tigas", "tigas@gmail.com", "senha123", 1, type1, new java.sql.Date(new Date().getTime()));
+//        User gerente1 = new User(null, "tatsuo", "tatsuo@gmail.com", "senha123", 1, type2, new java.sql.Date(new Date().getTime()));
+//        User admin = new User(null, "admin", "admin@pandyzer.com", "senha123", 1, type3, new java.sql.Date(new Date().getTime()));
 //
-//        userRepository.save(admin);
+//        userRepository.saveAll(Arrays.asList(avaliador1, avaliador2, gerente1, admin));
 //
 //        Status status1 = new Status(null, "Em andamento");
 //        Status status2 = new Status(null, "Concluido");
@@ -78,7 +81,7 @@ public class InitialData implements CommandLineRunner {
 //        ApplicationType applicationType10 = new ApplicationType(null, "Sistema de Help Desk");
 //
 //        applicationTypeRepository.saveAll(Arrays.asList(applicationType1, applicationType2, applicationType3, applicationType4, applicationType5, applicationType6, applicationType7, applicationType8, applicationType9, applicationType10));
-
+//
     }
 
 }

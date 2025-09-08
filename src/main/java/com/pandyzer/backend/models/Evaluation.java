@@ -1,6 +1,8 @@
 package com.pandyzer.backend.models;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -38,6 +40,8 @@ public class Evaluation {
     @JsonIgnore
     private List<Evaluator> evaluators = new ArrayList<>();
     @Column(name = "publico")
+    @JsonProperty("isPublic")
+    @JsonAlias({"public"})
     private Boolean isPublic = false;
     @Column(name = "limite_avaliadores")
     private Integer evaluatorsLimit;
@@ -88,9 +92,6 @@ public class Evaluation {
     public List<Evaluator> getEvaluators() {
         return evaluators;
     }
-    public Boolean getPublic() {
-        return isPublic;
-    }
     public Integer getEvaluatorsLimit() {
         return evaluatorsLimit;
     }
@@ -125,9 +126,27 @@ public class Evaluation {
     public void setEvaluators(List<Evaluator> evaluators) {
         this.evaluators = evaluators;
     }
-    public void setPublic(Boolean aPublic) {
-        isPublic = aPublic;
+
+    @JsonProperty("isPublic")
+    public Boolean getIsPublic() {
+        return isPublic;
     }
+
+    @JsonProperty("isPublic")
+    public void setIsPublic(Boolean isPublic) {
+        this.isPublic = isPublic;
+    }
+
+    @JsonIgnore
+    public Boolean getPublic() {
+        return isPublic;
+    }
+
+    @JsonIgnore
+    public void setPublic(Boolean aPublic) {
+        this.isPublic = aPublic;
+    }
+
     public void setEvaluatorsLimit(Integer evaluatorsLimit) {
         this.evaluatorsLimit = evaluatorsLimit;
     }

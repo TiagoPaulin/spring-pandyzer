@@ -20,7 +20,7 @@ public class GeminiController {
     @PostMapping
     public ResponseEntity<ChatBotResponseDTO> getGeminiChatResponse(@RequestBody ChatBotPromptDTO request) {
 
-        ChatBotResponseDTO obj = service.getGeminiResponse(request.getPrompt());
+        ChatBotResponseDTO obj = service.getGeminiResponse(request);
         return ResponseEntity.ok().body(obj);
 
     }

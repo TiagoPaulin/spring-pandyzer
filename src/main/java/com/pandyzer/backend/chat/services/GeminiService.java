@@ -1,102 +1,117 @@
 package com.pandyzer.backend.chat.services;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.pandyzer.backend.chat.dto.ChatBotPromptDTO;
 import com.pandyzer.backend.chat.dto.ChatBotResponseDTO;
-import com.pandyzer.backend.chat.models.Content;
-import com.pandyzer.backend.chat.models.GeminiRequest;
-import com.pandyzer.backend.chat.models.GeminiResponse;
-import com.pandyzer.backend.chat.models.Part;
 import com.pandyzer.backend.chat.services.exceptions.GeminiException;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.ResourceAccessException;
+import org.springframework.util.StringUtils;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.Collections;
-import java.util.stream.Collectors;
+import java.time.Duration;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 @Service
 public class GeminiService {
 
-    @Value("${gemini.api.key}")
-    private String geminiApiKey;
-    @Value("${gemini.api.url}")
-    private String geminiApiUrl;
-    private final RestTemplate restTemplate;
-    private static final String GEMINI_API_PATH = "v1beta/models/gemini-2.5-flash-preview-05-20:generateContent";
+    @Value("${flowise.base-url:http://localhost:3000}")
+    private String baseUrl;
 
-    public GeminiService() {
-        this.restTemplate = new RestTemplate();
+    @Value("${flowise.chatflow-id}")
+    private String chatflowId;
+
+    @Value("${flowise.api-key:}")
+    private String apiKey;
+
+    private final RestTemplate restTemplate;
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
+    // usa só Spring (sem Apache HttpClient)
+    public GeminiService(RestTemplateBuilder builder) {
+        this.restTemplate = builder.build();
     }
 
-    public ChatBotResponseDTO getGeminiResponse(String userPrompt) {
+    public ChatBotResponseDTO getGeminiResponse(ChatBotPromptDTO promptDTO) {
+        if (chatflowId == null || chatflowId.isBlank()) {
+            throw new GeminiException("flowise.chatflow-id não configurado");
+        }
+        if (promptDTO == null || !StringUtils.hasText(promptDTO.getPrompt())) {
+            throw new GeminiException("Prompt vazio");
+        }
 
-        Part userPart = new Part(userPrompt);
-        Content userContent = new Content("user", Collections.singletonList(userPart));
-        GeminiRequest request = new GeminiRequest(Collections.singletonList(userContent));
+        final String url = UriComponentsBuilder.fromHttpUrl(baseUrl)
+                .path("/api/v1/prediction/")
+                .path(chatflowId) // /prediction (singular)
+                .toUriString();
+
+        Map<String, Object> body = new HashMap<>();
+        body.put("question", promptDTO.getPrompt());
+
+        String sessionId = StringUtils.hasText(promptDTO.getSessionId())
+                ? promptDTO.getSessionId()
+                : UUID.randomUUID().toString();
+
+        Map<String, Object> override = new HashMap<>();
+        override.put("sessionId", sessionId);
+        body.put("overrideConfig", override);
+
         HttpHeaders headers = new HttpHeaders();
-
         headers.setContentType(MediaType.APPLICATION_JSON);
-
-        HttpEntity<GeminiRequest> entity = new HttpEntity<>(request, headers);
-
-        try {
-
-            ObjectMapper mapper = new ObjectMapper();
-            String jsonRequest = mapper.writeValueAsString(request);
-            System.out.println("JSON da Requisição Gemini: " + jsonRequest);
-
-        } catch (Exception e) {
-
-            throw new GeminiException("Erro ao serializar JSON da requisição (RestTemplate): " + e.getMessage());
-
+        if (StringUtils.hasText(apiKey)) {
+            headers.set("Authorization", "Bearer " + apiKey);
         }
 
         try {
+            ResponseEntity<String> response =
+                    restTemplate.postForEntity(url, new HttpEntity<>(body, headers), String.class);
 
-            String fullUrl = geminiApiUrl + GEMINI_API_PATH + "?key=" + geminiApiKey;
-            System.out.println("Tentando chamar Gemini API (RestTemplate) em: " + fullUrl);
-
-            ResponseEntity<GeminiResponse> response = restTemplate.postForEntity(
-                    fullUrl,
-                    entity,
-                    GeminiResponse.class
-            );
-
-            if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
-                GeminiResponse geminiResponse = response.getBody();
-                if (geminiResponse.getCandidates() != null && !geminiResponse.getCandidates().isEmpty()) {
-                    Content modelContent = geminiResponse.getCandidates().get(0).getContent();
-                    if (modelContent != null && modelContent.getParts() != null && !modelContent.getParts().isEmpty()) {
-                        String geminiTextResponse = modelContent.getParts().stream()
-                                .map(Part::getText)
-                                .collect(Collectors.joining(" "));
-                        return new ChatBotResponseDTO(geminiTextResponse);
-                    }
-                }
+            if (!response.getStatusCode().is2xxSuccessful()) {
+                throw new GeminiException("Flowise retornou HTTP " + response.getStatusCodeValue());
             }
 
-            throw new GeminiException("Não foi possível obter uma resposta do Gemini (RestTemplate). Resposta inesperada ou vazia.");
+            String respBody = response.getBody();
+            if (!StringUtils.hasText(respBody)) {
+                throw new GeminiException("Resposta vazia do Flowise");
+            }
 
-        } catch (HttpClientErrorException e) {
+            String text = extractText(respBody);
+            return new ChatBotResponseDTO(text);
 
-            throw new GeminiException("Erro na API Gemini: " + e.getStatusCode() + " - " + e.getResponseBodyAsString());
-
-        } catch (ResourceAccessException e) {
-
-            throw new GeminiException("Ocorreu um erro de conexão ao processar sua solicitação com o Gemini: " + e.getMessage());
-
+        } catch (HttpStatusCodeException httpEx) {
+            String details = safeExtractMessage(httpEx.getResponseBodyAsString());
+            throw new GeminiException("Falha HTTP " + httpEx.getStatusCode().value() + " do Flowise: " + details);
         } catch (Exception e) {
-
-            throw new GeminiException("Ocorreu um erro inesperado ao processar sua solicitação com o Gemini.");
-
+            throw new GeminiException("Falha ao consultar Flowise: " + e.getMessage());
         }
-
     }
 
+    private String extractText(String respBody) throws Exception {
+        JsonNode root = objectMapper.readTree(respBody);
+        String text = root.path("text").asText();
+        if (!StringUtils.hasText(text)) text = root.path("message").asText();
+        if (!StringUtils.hasText(text)) text = root.path("output").asText();
+        if (!StringUtils.hasText(text)) text = respBody; // fallback bruto p/ debug
+        return text;
+    }
+
+    private String safeExtractMessage(String body) {
+        try {
+            if (!StringUtils.hasText(body)) return "(sem corpo)";
+            JsonNode node = objectMapper.readTree(body);
+            String msg = node.path("message").asText();
+            if (StringUtils.hasText(msg)) return msg;
+            msg = node.path("error").asText();
+            return StringUtils.hasText(msg) ? msg : body;
+        } catch (Exception e) {
+            return body;
+        }
+    }
 }
