@@ -1,6 +1,7 @@
 package com.pandyzer.backend.controllers;
 
 import com.pandyzer.backend.models.User;
+import com.pandyzer.backend.models.dto.LoginDTO;
 import com.pandyzer.backend.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +25,12 @@ public class UserController {
         return ResponseEntity.ok().body(list);
     }
 
+
+    @PostMapping("/login")
+    public ResponseEntity<User> login(@RequestBody LoginDTO dto) {
+        User user = service.authenticate(dto);
+        return ResponseEntity.ok(user);
+    }
 
     @GetMapping(value = "/{id}")
     public ResponseEntity<User> findById (@PathVariable Long id) {
