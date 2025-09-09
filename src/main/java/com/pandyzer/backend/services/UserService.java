@@ -2,6 +2,7 @@ package com.pandyzer.backend.services;
 
 import com.pandyzer.backend.models.User;
 import com.pandyzer.backend.models.UserType;
+import com.pandyzer.backend.models.dto.LoginDTO;
 import com.pandyzer.backend.repositories.UserRepository;
 import com.pandyzer.backend.repositories.UserTypeRepository;
 import com.pandyzer.backend.services.exceptions.BadRequestException;
@@ -21,6 +22,24 @@ public class UserService {
 
     @Autowired
     private UserTypeRepository userTypeRepository;
+
+    public User authenticate(LoginDTO dto) {
+        if (isNullOrEmptyOrBlank(dto.getEmail()) || isNullOrEmptyOrBlank(dto.getSenha())) {
+            throw new BadRequestException("Informe e-mail e senha.");
+        }
+
+        // email não encontrado
+        User user = repository.findByEmail(dto.getEmail())
+                .orElseThrow(() -> new ResourceNotFoundException("Email não encontrado!", dto.getEmail()));
+
+
+        // senha incorreta
+        if (!dto.getSenha().equals(user.getPassword())) {
+            throw new BadRequestException("Senha incorreta.");
+        }
+
+        return user;
+    }
 
     // ========= Leitura =========
     public List<User> findAll() {
