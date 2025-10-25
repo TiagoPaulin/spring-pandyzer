@@ -12,10 +12,10 @@ public class Problem {
     @Column(name = "problemaId")
     private Long id;
 
-    @Column(name = "descricao")
+    @Column(name = "descricao", length = 2000)
     private String description;
 
-    @Column(name = "recomendacao")
+    @Column(name = "recomendacao", length = 2000)
     private String recomendation;
 
     @Column(name = "data_cadastro")
@@ -40,7 +40,7 @@ public class Problem {
 
     // NOVO: imagem em Base64 (sem ou com prefixo data URI)
     @Lob
-    @Column(name = "imagem_base64", columnDefinition = "LONGTEXT")
+    @Column(name = "imagem_base64")
     private String imageBase64;
 
     public Problem() {}

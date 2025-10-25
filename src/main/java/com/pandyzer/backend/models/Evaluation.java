@@ -17,7 +17,7 @@ public class Evaluation {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "avaliacaoId")
     private Long id;
-    @Column(name = "descricao")
+    @Column(name = "descricao", length = 2000)
     private String description;
     @Column(name = "dataInicial")
     private Date startDate;
@@ -45,6 +45,10 @@ public class Evaluation {
     private Boolean isPublic = false;
     @Column(name = "limite_avaliadores")
     private Integer evaluatorsLimit;
+    @OneToMany(mappedBy = "evaluation", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @JsonIgnore
+    private List<Log> logs = new ArrayList<>();
+
 
     public Evaluation () {}
 

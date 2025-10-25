@@ -81,7 +81,7 @@ public class InitialData implements CommandLineRunner {
 //        ApplicationType applicationType10 = new ApplicationType(null, "Sistema de Help Desk");
 //
 //        applicationTypeRepository.saveAll(Arrays.asList(applicationType1, applicationType2, applicationType3, applicationType4, applicationType5, applicationType6, applicationType7, applicationType8, applicationType9, applicationType10));
-//
+
     }
 
 }

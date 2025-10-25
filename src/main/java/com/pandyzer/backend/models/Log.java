@@ -1,5 +1,6 @@
 package com.pandyzer.backend.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -21,8 +22,9 @@ public class Log {
     @JoinColumn(name = "usuarioId")
     private User user;
 
-    @ManyToOne
-    @JoinColumn(name = "avaliacaoId")
+    @JsonIgnore
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "avaliacao_id", nullable = false)
     private Evaluation evaluation;
 
     @CreationTimestamp
