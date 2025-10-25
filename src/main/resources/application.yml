@@ -1,0 +1,23 @@
+spring:
+  mvc:
+    cors:
+      mappings:
+        "[/**]":
+          allowed-origins: "*"   # ou a URL do seu front em produção
+          allowed-methods: "GET,POST,PUT,PATCH,DELETE,OPTIONS"
+          allowed-headers: "*"
+          exposed-headers: "Authorization,Location"
+          allow-credentials: true
+          max-age: 3600
+  datasource:
+    url: jdbc:sqlserver://panda-data.database.windows.net:1433;database=panda_db;user=pandaadmin@panda-data;password=Panda@123;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;
+    username: pandaadmin
+    password: Panda@123
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+      dialect: org.hibernate.dialect.SQLServer2012Dialect
+
+server:
+  port: 8080

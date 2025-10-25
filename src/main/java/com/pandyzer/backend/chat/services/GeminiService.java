@@ -14,7 +14,6 @@ import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -22,7 +21,7 @@ import java.util.UUID;
 @Service
 public class GeminiService {
 
-    @Value("${flowise.base-url:http://localhost:3000}")
+    @Value("${flowise.base-url:https://cloud.flowiseai.com}")
     private String baseUrl;
 
     @Value("${flowise.chatflow-id}")
@@ -34,7 +33,6 @@ public class GeminiService {
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    // usa só Spring (sem Apache HttpClient)
     public GeminiService(RestTemplateBuilder builder) {
         this.restTemplate = builder.build();
     }
@@ -47,10 +45,7 @@ public class GeminiService {
             throw new GeminiException("Prompt vazio");
         }
 
-        final String url = UriComponentsBuilder.fromHttpUrl(baseUrl)
-                .path("/api/v1/prediction/")
-                .path(chatflowId) // /prediction (singular)
-                .toUriString();
+        final String url = buildPredictionUrl(); // <<<<< monta sem duplicar
 
         Map<String, Object> body = new HashMap<>();
         body.put("question", promptDTO.getPrompt());
@@ -59,6 +54,10 @@ public class GeminiService {
                 ? promptDTO.getSessionId()
                 : UUID.randomUUID().toString();
 
+        // top-level para Cloud
+        body.put("sessionId", sessionId);
+
+        // compat opcional
         Map<String, Object> override = new HashMap<>();
         override.put("sessionId", sessionId);
         body.put("overrideConfig", override);
@@ -93,12 +92,45 @@ public class GeminiService {
         }
     }
 
+    /** Monta a URL sem duplicar /api/v1/prediction, aceitando baseUrl com ou sem esse path. */
+    private String buildPredictionUrl() {
+        String b = baseUrl == null ? "" : baseUrl.trim();
+
+        // remove barras finais repetidas
+        while (b.endsWith("/")) {
+            b = b.substring(0, b.length() - 1);
+        }
+
+        // se a base já contém /api/v1/prediction em qualquer posição, só append do ID
+        if (b.contains("/api/v1/prediction")) {
+            return UriComponentsBuilder.fromHttpUrl(b)
+                    .path("/")
+                    .path(chatflowId)
+                    .toUriString();
+        }
+
+        // caso contrário, acrescenta o path padrão
+        return UriComponentsBuilder.fromHttpUrl(b)
+                .path("/api/v1/prediction/")
+                .path(chatflowId)
+                .toUriString();
+    }
+
     private String extractText(String respBody) throws Exception {
         JsonNode root = objectMapper.readTree(respBody);
+
         String text = root.path("text").asText();
+        if (!StringUtils.hasText(text)) text = root.path("response").asText();
+        if (!StringUtils.hasText(text)) text = root.path("answer").asText();
         if (!StringUtils.hasText(text)) text = root.path("message").asText();
         if (!StringUtils.hasText(text)) text = root.path("output").asText();
-        if (!StringUtils.hasText(text)) text = respBody; // fallback bruto p/ debug
+
+        if (!StringUtils.hasText(text) && root.isArray() && root.size() > 0) {
+            JsonNode first = root.get(0);
+            text = first.path("text").asText();
+        }
+
+        if (!StringUtils.hasText(text)) text = respBody; // fallback p/ debug
         return text;
     }
 
